@@ -40,6 +40,7 @@ export default function Register() {
         if (response.ok) {
             const data = await response.json();
             setErrormsg('');
+            localStorage.setItem('token', data.access_token);
             router.push("/test");
         } else {
             const data = await response.json();
