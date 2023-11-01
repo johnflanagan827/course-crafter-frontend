@@ -7,6 +7,7 @@ import Image from "next/image";
 import coursecrafter_logo from "@/public/assets/coursecrafter_logo.png";
 
 export default function Register() {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -27,7 +28,7 @@ export default function Register() {
 
 
     const createAccount = async () => {
-        const response = await fetch('http://127.0.0.1:5328/api/login', {
+        const response = await fetch(`${BACKEND_URL}/api/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

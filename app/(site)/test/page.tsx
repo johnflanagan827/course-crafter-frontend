@@ -3,8 +3,10 @@
 import React from 'react';
 
 function MyApp() {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
     const handleButtonClick = async () => {
-        const response = await fetch('http://127.0.0.1:5328/api/update', {
+        const response = await fetch(`${BACKEND_URL}/api/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

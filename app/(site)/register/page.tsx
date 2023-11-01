@@ -8,6 +8,7 @@ import coursecrafter_logo from '../../../public/assets/coursecrafter_logo.png';
 
 export default function Register() {
     const router = useRouter();
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errormsg, setErrormsg] = useState('');
@@ -28,7 +29,7 @@ export default function Register() {
 
 
     const createAccount = async () => {
-        const response = await fetch('http://127.0.0.1:5328/api/createAccount', {
+        const response = await fetch(`${BACKEND_URL}/api/createAccount`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -120,4 +121,3 @@ export default function Register() {
         </main>
     )
 }
-
