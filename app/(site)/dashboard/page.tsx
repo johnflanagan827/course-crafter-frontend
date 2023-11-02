@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import Header from '@/components/header';
+import Header from '@/app/components/header';
 
 export default function Dashboard() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-    const token = localStorage.getItem('token');
+    // const token = localStorage.getItem('token');
     const [searchQuery, setSearchQuery] = useState('');
     const [classList, setClassList] = useState([]);
     const [errormsg, setErrormsg] = useState('');
@@ -19,7 +19,7 @@ export default function Dashboard() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                // 'Authorization': `Bearer ${token}`,
                 'search': searchQuery
             },
         });
