@@ -22,7 +22,7 @@ export default function Header() {
                         Class Recommendation
                     </a>
                     <a
-                        href="javascript:void(0)"
+                        href={`${FRONTEND_URL}/settings`}
                         className="block px-4 py-2 mt-3 text-center text-gray-700 duration-150 font-medium rounded-lg border hover:bg-gray-50 active:bg-gray-100 sm:mt-0 md:text-sm"
                     >
                         Settings
