@@ -14,20 +14,6 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [errormsg, setErrormsg] = useState('');
 
-
-    useEffect(() => {
-        console.log(username);
-    }, [username]);
-
-    useEffect(() => {
-        console.log(password);
-    }, [password]);
-
-    useEffect(() => {
-        console.log(Cookies.get('username'));
-    }, []);
-
-
     const createAccount = async () => {
         const response = await fetch(`${BACKEND_URL}/api/login`, {
             method: 'POST',

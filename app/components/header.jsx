@@ -1,5 +1,3 @@
-"use client"
-
 import Image from "next/image";
 import coursecrafter_logo from "../../public/assets/coursecrafter_logo.png";
 import React from "react";
@@ -12,11 +10,13 @@ export default function Header() {
         <div className="mx-auto px-4 md:px-8">
             <div className="items-start justify-between py-4 border-b md:flex">
                 <div>
-                    <Image alt="course crafter logo" src={coursecrafter_logo}  width={200} />
+                    <a href={`${FRONTEND_URL}/dashboard`}>
+                        <Image alt="course crafter logo" src={coursecrafter_logo}  width={200} />
+                    </a>
                 </div>
                 <div className="items-center gap-x-3 mt-6 md:mt-0 sm:flex">
                     <a
-                        href="javascript:void(0)"
+                        href=""
                         className="block px-4 py-2 text-center text-white duration-150 font-medium bg-indigo-600 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 md:text-sm"
                     >
                         Class Recommendation
