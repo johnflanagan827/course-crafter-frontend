@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image";
 import coursecrafter_logo from "../public/assets/coursecrafter_logo.png";
 import React from "react";
