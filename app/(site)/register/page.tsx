@@ -8,24 +8,11 @@ import coursecrafter_logo from '../../../public/assets/coursecrafter_logo.png';
 
 export default function Register() {
     const router = useRouter();
+    const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errormsg, setErrormsg] = useState('');
-
-
-    useEffect(() => {
-        console.log(username);
-    }, [username]);
-
-
-    useEffect(() => {
-        console.log(password);
-    }, [password]);
-
-    useEffect(() => {
-        console.log(Cookies.get('username'));
-    }, []);
 
 
     const createAccount = async () => {
@@ -41,7 +28,7 @@ export default function Register() {
         if (response.ok) {
             const data = await response.json();
             setErrormsg('');
-            router.push("/test");
+            router.push("/dashboard");
         } else {
             const data = await response.json();
             setErrormsg(data.msg);
@@ -62,7 +49,7 @@ export default function Register() {
                     <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>{errormsg}</div>
                     <div className="mt-5 space-y-2">
                         <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Register for your account</h3>
-                        <p className="">Already have an account? <a href="http://127.0.0.1:3000/login" className="font-medium text-indigo-600 hover:text-indigo-500">Login</a></p>
+                        <p className="">Already have an account? <a href={`${FRONTEND_URL}/login`} className="font-medium text-indigo-600 hover:text-indigo-500">Login</a></p>
                     </div>
                 </div>
                 <form

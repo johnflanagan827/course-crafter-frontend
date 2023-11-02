@@ -7,6 +7,7 @@ import Image from "next/image";
 import coursecrafter_logo from "@/public/assets/coursecrafter_logo.png";
 
 export default function Register() {
+    const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const router = useRouter();
     const [username, setUsername] = useState('');
@@ -41,7 +42,7 @@ export default function Register() {
             const data = await response.json();
             setErrormsg('');
             localStorage.setItem('token', data.access_token);
-            router.push("/test");
+            router.push("/dashboard");
         } else {
             const data = await response.json();
             setErrormsg(data.msg);
@@ -61,10 +62,9 @@ export default function Register() {
                 <div className="text-center">
                     <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>{errormsg}</div>
                     <img src="" width={150} className="mx-auto" />
-                    <h1 className='text-5xl font-extrabold'>Course Crafter</h1>
                     <div className="mt-5 space-y-2">
                         <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Sign into your account</h3>
-                        <p className="">Don't have an account? <a href="http://127.0.0.1:3000/register" className="font-medium text-indigo-600 hover:text-indigo-500">Register</a></p>
+                        <p className="">Don't have an account? <a href={`${FRONTEND_URL}/register`} className="font-medium text-indigo-600 hover:text-indigo-500">Register</a></p>
                     </div>
                 </div>
                 <form
