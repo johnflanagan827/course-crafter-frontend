@@ -5,6 +5,7 @@ import Header from '@/app/components/header';
 
 export default function Dashboard() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
     // const token = localStorage.getItem('token');
     const [searchQuery, setSearchQuery] = useState('');
     const [classList, setClassList] = useState([]);
@@ -33,37 +34,27 @@ export default function Dashboard() {
             setErrormsg(data.msg);
         }
     }
+    const headingStyle: React.CSSProperties = {
+        fontFamily: 'Monaco',
+    };
 
     return (
         <div>
-            <Header/>
-            <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4'>Search for Classes</h1>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                }}
-                className="max-w-md px-4 mx-auto mt-12">
-                <div className="relative">
-                    <button onClick={(e) => fetchSearch()}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="absolute top-0 bottom-0 w-6 h-6 my-auto text-gray-400 left-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                    <input
-                        type="text"
-                        placeholder="Search"
-                        className="w-full py-3 pl-12 pr-4 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-indigo-600"
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-            </form>
-            <div className='flex justify-center mt-8'>
-                <div>
-                    {classList.map((item, index) => (
-                        <p key={index}>{item}</p>
-                    ))}
-                    <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>{errormsg}</div>
-                </div>
+            <Header />
+            <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Welcome to Course Crafter</h1>
+            <p style={{ textAlign: 'center', marginTop: '50px' }}>
+                Course Crafter is the ultimate platform where students can effortlessly search for classes by name, receive personalized class recommendations, and efficiently devise a comprehensive four-year schedule plan. Dive in and simplify your academic journey today!
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+                <a href={`${FRONTEND_URL}/search`} className="block px-8 py-6 text-center text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
+                    Search
+                </a>
+                <a href={`${FRONTEND_URL}/recommendation`} className="block px-8 py-6 text-black text-white duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
+                    Course Recommendation
+                </a>
+                <a href={`${FRONTEND_URL}/planner`} className="block px-8 py-6 text-center text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
+                    Schedule Planner
+                </a>
             </div>
         </div>
     );
