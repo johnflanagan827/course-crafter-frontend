@@ -49,7 +49,7 @@ export default function Dashboard() {
                 <a href={`${FRONTEND_URL}/search`} className="block px-8 py-6 text-center text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
                     Search
                 </a>
-                <a href={`${FRONTEND_URL}/recommendation`} className="block px-8 py-6 text-black text-white duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
+                <a href={`${FRONTEND_URL}/recommendation`} className="block px-8 py-6 text-black text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
                     Course Recommendation
                 </a>
                 <a href={`${FRONTEND_URL}/planner`} className="block px-8 py-6 text-center text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
