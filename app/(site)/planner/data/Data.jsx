@@ -7,6 +7,7 @@ export const taskStatus = {
             { id: "3", content: "Third Class" },
             { id: "4", content: "Fourth Class" },
             { id: "5", content: "Fifth Class" },
+            { id: "6", content: "Sixth Class" },
         ]
     },
     entry2: {
@@ -42,9 +43,6 @@ export const taskStatus = {
 export const rightColumnData = {
     id: 'queue',
     items: [
-        { id: 'right-1', content: 'Class X' },
-        { id: 'right-2', content: 'Class Y'}
-        // ... other items
     ]
 };
 
@@ -54,10 +52,10 @@ export const minors = [
         id: 'Minors',
         title: 'Minors',
         options: [
-            { label: 'Minor 1' },
-            { label: 'Minor 2' },
-            { label: 'Minor 3' },
-            { label: 'Minor 4' },
+            { label: 'Engineering Corporate Practice', value: 'Engineering Corporate Practice' },
+            { label: 'Energy Studies', value: 'Energy Studies'},
+            { label: 'Collaborative Innovation', value: 'Collaborative Innovation' },
+            { label: 'Data Science', value: 'Data Science' },
         ],
     },
 ];
@@ -67,10 +65,11 @@ export const concentrations = [
         id: 'Concentrations',
         title: 'Concentrations',
         options: [
-            { label: 'Concentration 1' },
-            { label: 'Concentration 2' },
-            { label: 'Concentration 3' },
-            { label: 'Concentration 4' },
+            { label: 'Bioinformatics and Computational Biology', value: 'Bioinformatics and Computational Biology' },
+            { label: 'Cloud Computing', value: 'Cloud Computing' },
+            { label: 'Cyber Security', value: 'Cyber Security' },
+            { label: 'Mobile Computing', value: 'Mobile Computing' },
+            { label: 'Media Computing', value: 'Media Computing'}
         ],
     },
 ];

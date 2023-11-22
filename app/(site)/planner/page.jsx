@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ScheduleGrid from "./components/ScheduleGrid";
 import AccordionItem from './components/Accordion';
@@ -16,6 +16,43 @@ export default function Planner() {
         ...taskStatus
     });
 
+
+    const [maxId, setMaxId] = useState(0);
+
+    useEffect(() => {
+        // Assuming taskStatus is available here and it's an object like the one you provided
+        let currentMaxId = maxId;
+        Object.values(taskStatus).forEach(entry => {
+            entry.items.forEach(item => {
+                const itemId = parseInt(item.id, 10);
+                if (itemId > currentMaxId) {
+                    currentMaxId = itemId;
+                }
+            });
+        });
+        setMaxId(currentMaxId);
+    }, []);
+
+    const updateTaskStatus = (newClassContent) => {
+        setMaxId(prevMaxId => {
+            const newId = prevMaxId + 1;
+
+            setColumns(prevColumns => {
+                const newItem = { id: newId.toString(), content: newClassContent };
+                const updatedEntry1Items = [...prevColumns.entry1.items, newItem];
+
+                return {
+                    ...prevColumns,
+                    entry1: {
+                        ...prevColumns.entry1,
+                        items: updatedEntry1Items
+                    }
+                };
+            });
+
+            return newId;
+        });
+    };
 
 
     const onDragEnd = (result) => {
@@ -70,11 +107,12 @@ export default function Planner() {
                 <div className="grid grid-cols-12 gap-2">
                     <div className="col-span-2 flex flex-col p-2 mt-10">
                         {minors.map((item) => (
-                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options}/>
+                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options} onOptionSelect={() => updateTaskStatus("New Class Content")}
+                            />
                         ))}
                         <div className="mb-8"></div>
                         {concentrations.map((item) => (
-                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options} />
+                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options}     onOptionSelect={() => updateTaskStatus("New Class Content")}/>
                         ))}
                     </div>
 

@@ -1,13 +1,17 @@
 "use client"
 
 import React, { useState } from 'react';
+import { taskStatus } from "../data/Data";
 
-export default function AccordionItem({ id, title, options }) {
-    const [isOpen, setIsOpen] = useState(false);
+export default function AccordionItem({ id, title, options, onOptionSelect }) {
+    const [isOpen, setIsOpen] = useState(true);
     const [selectedOption, setSelectedOption] = useState(null);
 
     const handleRadioChange = (event) => {
         setSelectedOption(event.target.value);
+        if (onOptionSelect) {
+            onOptionSelect();
+        }
     };
 
     return (
@@ -26,16 +30,16 @@ export default function AccordionItem({ id, title, options }) {
             >
                 <div className="flex flex-col pl-4">
                     {options.map((option) => (
-                        <label key={option.value} className="inline-flex items-center">
+                        <label key={option.value} className="inline-flex items-center mb-2"> {/* Increased bottom margin */}
                             <input
                                 type="radio"
                                 name={id}
                                 value={option.value}
                                 checked={selectedOption === option.value}
                                 onChange={handleRadioChange}
-                                className="form-radio h-4 w-4 text-purple-600 transition duration-150 ease-in-out"
+                                className="form-radio h-4 w-4 text-purple-600 transition duration-150 ease-in-out mr-2" // Added right margin to radio
                             />
-                            <span className="ml-2 text-gray-700 dark:text-gray-300">{option.label}</span>
+                            <span className="text-gray-700 dark:text-gray-300">{option.label}</span>
                         </label>
                     ))}
                 </div>
