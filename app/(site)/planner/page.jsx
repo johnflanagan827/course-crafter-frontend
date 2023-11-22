@@ -2,146 +2,99 @@
 
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-
-const tasks = [
-    { id: "1", content: "This is a test to see how it handles long text" },
-    { id: "2", content: "Second task" },
-    { id: "3", content: "Third task" },
-    { id: "4", content: "Fourth task" },
-    { id: "5", content: "Fifth task" }
-];
-
-const taskStatus = {
-    entry1: {
-        name: "Freshman Fall",
-        items: tasks
-    },
-    entry2: {
-        name: "Freshman Spring",
-        items: []
-    },
-    entry3: {
-        name: "Sophomore Fall",
-        items: []
-    },
-    entry4: {
-        name: "Sophomore Spring",
-        items: []
-    },
-    entry5: {
-        name: "Junior Fall",
-        items: []
-    },
-    entry6: {
-        name: "Junior Spring",
-        items: []
-    },
-    entry7: {
-        name: "Senior Fall",
-        items: []
-    },
-    entry8: {
-        name: "Senior Spring",
-        items: []
-    }
-};
+import ScheduleGrid from "./components/ScheduleGrid";
+import AccordionItem from './components/Accordion';
+import GridItem from './components/GridItem';
+import {taskStatus} from "./data/Data";
+import {rightColumnData} from "./data/Data";
+import {minors} from "./data/Data";
+import {concentrations} from "./data/Data";
 
 export default function Planner() {
-    const [columns, setColumns] = useState(taskStatus);
+    const [columns, setColumns] = useState({
+        'queue': rightColumnData,
+        ...taskStatus
+    });
+
+
 
     const onDragEnd = (result) => {
-        if (!result.destination) return;
         const { source, destination } = result;
 
-        if (source.droppableId !== destination.droppableId) {
-            const sourceColumn = columns[source.droppableId];
-            const destColumn = columns[destination.droppableId];
-            const sourceItems = [...sourceColumn.items];
-            const destItems = [...destColumn.items];
-            const [removed] = sourceItems.splice(source.index, 1);
-            destItems.splice(destination.index, 0, removed);
+        // Nothing happens if there's no destination (item was dropped outside a droppable area)
+        if (!destination) {
+            return;
+        }
+
+        // Nothing happens if the item is dropped in the same place
+        if (source.droppableId === destination.droppableId && source.index === destination.index) {
+            return;
+        }
+
+        const start = columns[source.droppableId];
+        const finish = columns[destination.droppableId];
+
+        // Moving within the same column
+        if (start === finish) {
+            const newItems = Array.from(start.items);
+            const [reorderedItem] = newItems.splice(source.index, 1);
+            newItems.splice(destination.index, 0, reorderedItem);
+
             setColumns({
                 ...columns,
-                [source.droppableId]: {
-                    ...sourceColumn,
-                    items: sourceItems
-                },
-                [destination.droppableId]: {
-                    ...destColumn,
-                    items: destItems
-                }
+                [source.droppableId]: { ...start, items: newItems },
             });
         } else {
-            const column = columns[source.droppableId];
-            const copiedItems = [...column.items];
-            const [removed] = copiedItems.splice(source.index, 1);
-            copiedItems.splice(destination.index, 0, removed);
+            // Moving from one column to another
+            const startItems = Array.from(start.items);
+            const [movedItem] = startItems.splice(source.index, 1);
+            const finishItems = Array.from(finish.items);
+            finishItems.splice(destination.index, 0, movedItem);
+
             setColumns({
                 ...columns,
-                [source.droppableId]: {
-                    ...column,
-                    items: copiedItems
-                }
+                [source.droppableId]: { ...start, items: startItems },
+                [destination.droppableId]: { ...finish, items: finishItems },
             });
         }
     };
 
-    // Split the columns into two rows, each containing four columns
-    const rows = [
-        { entry1: columns.entry1, entry2: columns.entry2, entry3: columns.entry3, entry4: columns.entry4 },
-        { entry5: columns.entry5, entry6: columns.entry6, entry7: columns.entry7, entry8: columns.entry8 }
-    ];
 
     return (
-        <div className="flex justify-center">
+        <div className="mt-5">
+            <h2 className="text-center text-4xl font-black mb-5">Class Planner</h2>
+            <div className="flex justify-center mb-10">
+                <p className="max-w-screen-lg">Here will be a description of what this section does, so the user knows what to do. For now, I am just typing in garbage, but when I get a little further along, I plan to make this sound better. Currently, the UI is looking alright, so I am almost at the point where I will start to work on the actual functionality, before focusing a little more on enhancing the overall look/feel.</p>
+            </div>
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex flex-col items-center"> {/* Container to align the grid */}
-                    {rows.map((row, rowIndex) => (
-                        // Grid container for each row
-                        <div key={rowIndex} className="grid grid-cols-4 gap-4 mb-5" style={{ maxWidth: "calc(250px * 4 + 1rem * 3)" }}> {/* Max width for the grid container */}
-                            {Object.entries(row).map(([columnId, column], index) => (
-                                <div
-                                    className="flex flex-col items-center" // Removed mx-2
-                                    key={columnId}
-                                    style={{ width: "250px" }} // Fixed width for each grid item
-                                >
-                                    <h2>{column.name}</h2>
-                                    <div className="m-1">
-                                        <Droppable droppableId={columnId} key={columnId}>
-                                            {(provided, snapshot) => (
-                                                <div
-                                                    {...provided.droppableProps}
-                                                    ref={provided.innerRef}
-                                                    className={`p-1 w-60 min-h-[350px] ${snapshot.isDraggingOver ? 'bg-blue-200' : 'bg-gray-300'}`}
-                                                >
-                                                    {column.items.map((item, index) => (
-                                                        <Draggable key={item.id} draggableId={item.id} index={index}>
-                                                            {(provided, snapshot) => (
-                                                                <div
-                                                                    ref={provided.innerRef}
-                                                                    {...provided.draggableProps}
-                                                                    {...provided.dragHandleProps}
-                                                                    className={`select-none p-4 mb-2 min-h-[50px] ${snapshot.isDragging ? 'bg-blue-900' : 'bg-blue-700'} text-white`}
-                                                                    style={provided.draggableProps.style}
-                                                                >
-                                                                    {item.content}
-                                                                </div>
-                                                            )}
-                                                        </Draggable>
-                                                    ))}
-                                                    {provided.placeholder}
-                                                </div>
-                                            )}
-                                        </Droppable>
-                                    </div>
-                                </div>
-                            ))}
+                <div className="grid grid-cols-12 gap-2">
+                    <div className="col-span-2 flex flex-col p-2 mt-10">
+                        {minors.map((item) => (
+                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options}/>
+                        ))}
+                        <div className="mb-8"></div>
+                        {concentrations.map((item) => (
+                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options} />
+                        ))}
+                    </div>
+
+                    <div className="col-span-8 flex justify-center">
+                        <ScheduleGrid columns={columns} />
+                    </div>
+
+                    <div className="col-span-2 flex flex-col justify-center overflow-x-auto">
+                        <div className="w-full max-w-xs">
+                            <GridItem column={columns.queue}/>
                         </div>
-                    ))}
+                    </div>
+
                 </div>
             </DragDropContext>
+            <div className="flex justify-center">
+                <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-md px-20 py-5 focus:outline-none">
+                    Save Schedule
+                </button>
+            </div>
         </div>
     );
-
-
 }
