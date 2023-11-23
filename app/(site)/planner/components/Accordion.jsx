@@ -9,10 +9,18 @@ export default function AccordionItem({ id, title, options, onOptionSelect }) {
     const handleRadioChange = (event) => {
         setSelectedOption(event.target.value);
         const selectedOption = options.find(option => option.value === event.target.value);
-        if (selectedOption && onOptionSelect) {
-            onOptionSelect(selectedOption.contents || []);
+
+        if (selectedOption) {
+            const contentsArray = Array.isArray(selectedOption.contents) ? selectedOption.contents : [];
+            const creditsArray = contentsArray.map(content => content.credits || 0);
+            const topicsArray = contentsArray.map(content => content.topic || '');
+
+            if (onOptionSelect) {
+                onOptionSelect(topicsArray, creditsArray);
+            }
         }
     };
+
 
 
     return (
