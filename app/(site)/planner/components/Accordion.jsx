@@ -1,27 +1,26 @@
 "use client"
 
 import React, { useState } from 'react';
-import { taskStatus } from "../data/Data";
 
 export default function AccordionItem({ id, title, options, onOptionSelect }) {
     const [isOpen, setIsOpen] = useState(true);
-    const [selectedOption, setSelectedOption] = useState(options?.[0]?.value || null);
+    const [selectedOption, setSelectedOption] = useState(options?.[0].value || null);
     const handleRadioChange = (event) => {
         setSelectedOption(event.target.value);
         const selectedOption = options.find(option => option.value === event.target.value);
 
         if (selectedOption) {
-            const contentsArray = Array.isArray(selectedOption.contents) ? selectedOption.contents : [];
-            const creditsArray = contentsArray.map(content => content.credits || 0);
-            const topicsArray = contentsArray.map(content => content.topic || '');
+            const itemsArray = Array.isArray(selectedOption.contents) ? selectedOption.contents.map(content => ({
+                id: content.id || '',
+                content: content.topic || '',
+                credits: content.credits || 0
+            })) : [];
 
             if (onOptionSelect) {
-                onOptionSelect(topicsArray, creditsArray);
+                onOptionSelect(itemsArray);
             }
         }
     };
-
-
 
     return (
         <div>
@@ -48,7 +47,7 @@ export default function AccordionItem({ id, title, options, onOptionSelect }) {
                                 onChange={handleRadioChange}
                                 className="form-radio h-4 w-4 text-purple-600 transition duration-150 ease-in-out mr-2"
                             />
-                            <span className="text-gray-700 dark:text-gray-300">{option.label}</span>
+                            <span className="text-gray-700">{option.label}</span>
                         </label>
                     ))}
                 </div>

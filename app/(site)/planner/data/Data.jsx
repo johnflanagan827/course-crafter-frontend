@@ -97,9 +97,9 @@ export const minors = [
         id: 'Minors',
         title: 'Minors',
         options: [
-            {label: 'None', value: 'None'},
-            { label: 'Engineering Corporate Practice', value: 'Engineering Corporate Practice', contents: ['Class Content 1', 'Class Content 2']},
-            { label: 'Energy Studies', value: 'Energy Studies'},
+            { label: 'None', value: 'None' },
+            { label: 'Engineering Corporate Practice', value: 'Engineering Corporate Practice', contents: ['Class Content 1', 'Class Content 2'] },
+            { label: 'Energy Studies', value: 'Energy Studies' },
             { label: 'Collaborative Innovation', value: 'Collaborative Innovation' },
             { label: 'Data Science', value: 'Data Science' },
         ],
@@ -116,10 +116,10 @@ export const concentrations = [
                 label: 'Bioinformatics and Computational Biology',
                 value: 'Bioinformatics and Computational Biology',
                 contents: [
-                    { topic: 'Bioinformatics Computing / Complex Networks / Healthcare Analytics (3 credits)', credits: 3},
-                    { topic: 'Database Concepts (3 credits)', credits: 3 },
-                    { topic: 'CSE 40771 / 40755 / 40772 / 40647 / 40746 / 40657 / Research (3 credits)', credits: 3},
-                    { topic: 'BIOS  20201 / 20250 / 40577 (3 credits)', credits: 3},
+                    { id: "1", topic: 'Bioinformatics Computing / Complex Networks / Healthcare Analytics (3 credits)', credits: 3 },
+                    { id: "101", topic: 'Database Concepts (3 credits)', credits: 3 },
+                    { id: "102", topic: 'CSE 40771 / 40755 / 40772 / 40647 / 40746 / 40657 / Research (3 credits)', credits: 3 },
+                    { id: "103", topic: 'BIOS  20201 / 20250 / 40577 (3 credits)', credits: 3 },
                 ]
             },
 
