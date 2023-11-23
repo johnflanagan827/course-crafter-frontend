@@ -52,7 +52,8 @@ export const minors = [
         id: 'Minors',
         title: 'Minors',
         options: [
-            { label: 'Engineering Corporate Practice', value: 'Engineering Corporate Practice' },
+            {label: 'None', value: 'None'},
+            { label: 'Engineering Corporate Practice', value: 'Engineering Corporate Practice', contents: ['Class Content 1', 'Class Content 2']},
             { label: 'Energy Studies', value: 'Energy Studies'},
             { label: 'Collaborative Innovation', value: 'Collaborative Innovation' },
             { label: 'Data Science', value: 'Data Science' },
@@ -65,7 +66,8 @@ export const concentrations = [
         id: 'Concentrations',
         title: 'Concentrations',
         options: [
-            { label: 'Bioinformatics and Computational Biology', value: 'Bioinformatics and Computational Biology' },
+            {label: 'None', value: 'None'},
+            { label: 'Bioinformatics and Computational Biology', value: 'Bioinformatics and Computational Biology', contents: ['Class Content 3', 'Class Content 4'] },
             { label: 'Cloud Computing', value: 'Cloud Computing' },
             { label: 'Cyber Security', value: 'Cyber Security' },
             { label: 'Mobile Computing', value: 'Mobile Computing' },

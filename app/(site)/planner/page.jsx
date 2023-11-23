@@ -33,24 +33,56 @@ export default function Planner() {
         setMaxId(currentMaxId);
     }, []);
 
-    const updateTaskStatus = (newClassContent) => {
+    const findEntryWithLeastItems = (currentColumns) => {
+        let minItems = Infinity;
+        let entryWithMinItems = null;
+
+        Object.entries(currentColumns).forEach(([key, entry]) => {
+            if (key !== 'queue' && entry.items && entry.items.length < minItems) {
+                minItems = entry.items.length;
+                entryWithMinItems = key;
+            }
+        });
+
+        return entryWithMinItems;
+    };
+
+
+    const updateTaskStatus = (newClassItems, accordionId) => {
+        // Ensure newClassItems is always an array
+        const items = Array.isArray(newClassItems) ? newClassItems : [];
+
         setMaxId(prevMaxId => {
-            const newId = prevMaxId + 1;
+            let newMaxId = prevMaxId;
 
             setColumns(prevColumns => {
-                const newItem = { id: newId.toString(), content: newClassContent };
-                const updatedEntry1Items = [...prevColumns.entry1.items, newItem];
+                let updatedColumns = { ...prevColumns };
 
-                return {
-                    ...prevColumns,
-                    entry1: {
-                        ...prevColumns.entry1,
-                        items: updatedEntry1Items
+                // First, remove items previously added by this accordion
+                Object.keys(updatedColumns).forEach(key => {
+                    if (key !== 'queue') {
+                        updatedColumns[key].items = updatedColumns[key].items.filter(item => item.addedBy !== accordionId);
                     }
-                };
+                });
+
+                // Then, add new items
+                items.forEach(content => {
+                    const entryToUpdate = findEntryWithLeastItems(updatedColumns);
+                    const newItem = { id: (++newMaxId).toString(), content, addedBy: accordionId };
+
+                    updatedColumns = {
+                        ...updatedColumns,
+                        [entryToUpdate]: {
+                            ...updatedColumns[entryToUpdate],
+                            items: [...updatedColumns[entryToUpdate].items, newItem]
+                        }
+                    };
+                });
+
+                return updatedColumns;
             });
 
-            return newId;
+            return newMaxId;
         });
     };
 
@@ -105,14 +137,13 @@ export default function Planner() {
             </div>
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="grid grid-cols-12 gap-2">
-                    <div className="col-span-2 flex flex-col p-2 mt-10">
+                    <div className="col-span-2 flex flex-col p-2">
                         {minors.map((item) => (
-                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options} onOptionSelect={() => updateTaskStatus("New Class Content")}
-                            />
+                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options} onOptionSelect={(contents) => updateTaskStatus(contents, item.id)}/>
                         ))}
-                        <div className="mb-8"></div>
+                        <div className="mb-4"></div>
                         {concentrations.map((item) => (
-                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options}     onOptionSelect={() => updateTaskStatus("New Class Content")}/>
+                            <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options} onOptionSelect={(contents) => updateTaskStatus(contents, item.id)}/>
                         ))}
                     </div>
 

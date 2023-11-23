@@ -5,20 +5,21 @@ import { taskStatus } from "../data/Data";
 
 export default function AccordionItem({ id, title, options, onOptionSelect }) {
     const [isOpen, setIsOpen] = useState(true);
-    const [selectedOption, setSelectedOption] = useState(null);
-
+    const [selectedOption, setSelectedOption] = useState(options?.[0]?.value || null);
     const handleRadioChange = (event) => {
         setSelectedOption(event.target.value);
-        if (onOptionSelect) {
-            onOptionSelect();
+        const selectedOption = options.find(option => option.value === event.target.value);
+        if (selectedOption && onOptionSelect) {
+            onOptionSelect(selectedOption.contents || []);
         }
     };
 
+
     return (
-        <div className="mb-2">
+        <div>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex justify-between items-center w-full font-medium text-left border rounded-lg p-4 bg-purple-700 text-white hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 dark:bg-purple-800 dark:hover:bg-purple-900 dark:focus:ring-purple-900"
+                className="flex justify-between items-center w-full font-medium text-left border rounded-lg p-4 bg-purple-700 text-white hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600"
             >
                 {title}
                 <svg className={`w-4 h-4 transform ${isOpen ? 'rotate-180' : 'rotate-0'}`} viewBox="0 0 20 20" fill="currentColor">
@@ -37,7 +38,7 @@ export default function AccordionItem({ id, title, options, onOptionSelect }) {
                                 value={option.value}
                                 checked={selectedOption === option.value}
                                 onChange={handleRadioChange}
-                                className="form-radio h-4 w-4 text-purple-600 transition duration-150 ease-in-out mr-2" // Added right margin to radio
+                                className="form-radio h-4 w-4 text-purple-600 transition duration-150 ease-in-out mr-2"
                             />
                             <span className="text-gray-700 dark:text-gray-300">{option.label}</span>
                         </label>
