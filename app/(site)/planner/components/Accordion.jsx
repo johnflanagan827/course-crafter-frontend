@@ -2,23 +2,15 @@
 
 import React, { useState } from 'react';
 
-export default function AccordionItem({ id, title, options, onOptionSelect }) {
+export default function AccordionItem({ id, title, options, onOptionSelect, updateTaskStatusWithConcentration }) {
     const [isOpen, setIsOpen] = useState(true);
-    const [selectedOption, setSelectedOption] = useState(options?.[0].value || null);
-    const handleRadioChange = (event) => {
+    const [selectedOption, setSelectedOption] = useState(null);
+    const handleRadioChange = async (event) => {
         setSelectedOption(event.target.value);
         const selectedOption = options.find(option => option.value === event.target.value);
 
-        if (selectedOption) {
-            const itemsArray = Array.isArray(selectedOption.contents) ? selectedOption.contents.map(content => ({
-                id: content.id || '',
-                content: content.topic || '',
-                credits: content.credits || 0
-            })) : [];
-
-            if (onOptionSelect) {
-                onOptionSelect(itemsArray);
-            }
+        if (id === 'Concentrations' && selectedOption) {
+            await updateTaskStatusWithConcentration(selectedOption.value);
         }
     };
 
