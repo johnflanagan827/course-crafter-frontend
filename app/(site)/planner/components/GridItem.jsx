@@ -6,6 +6,17 @@ export default function GridItem({ column }) {
         return column && column.items ? column.items.reduce((total, item) => total + item.credits, 0) : 0;
     };
 
+    const getItemColorClass = (attribute) => {
+        switch (attribute) {
+            case "Core Curriculum": return "bg-red-500";
+            case "Technical Elective": return "bg-green-500";
+            case "CSE Elective": return "bg-blue-500";
+            case "CSE Curriculum": return "bg-yellow-500";
+            case "College of Engineering Requirement": return "bg-purple-500";
+            default: return "bg-gray-500";
+        }
+    };
+
     return (
         <div className="flex flex-col items-center m-1 w-64">
             <h2 className="text-sm font-medium">{column.name}</h2>
@@ -24,7 +35,7 @@ export default function GridItem({ column }) {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
-                                            className={`select-none p-2 mb-1 flex items-center min-h-[40px] ${snapshot.isDragging ? 'bg-blue-900' : 'bg-blue-700'} text-white text-xs rounded`}
+                                            className={`select-none p-2 mb-1 flex items-center min-h-[40px] ${getItemColorClass(item.attribute)} text-white text-xs rounded ${snapshot.isDragging ? 'opacity-75' : ''}`}
                                             style={provided.draggableProps.style}
                                         >
                                             {item.content}

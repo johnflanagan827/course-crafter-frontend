@@ -97,7 +97,7 @@ export default function Planner() {
             }
 
             const updatedColumns = await response.json();
-            setColumns(columns);
+            setColumns(updatedColumns);
         } catch (error) {
             console.error('Error updating task status with concentration:', error);
         }
