@@ -5,16 +5,13 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ScheduleGrid from "./components/ScheduleGrid";
 import AccordionItem from './components/Accordion';
 import GridItem from './components/GridItem';
-import {rightColumnData} from "./data/Data";
-import {minors} from "./data/Data";
 
 
 export default function Planner() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-    const [columns, setColumns] = useState({
-        'queue': rightColumnData,
-    });
+    const [columns, setColumns] = useState({});
     const [concentrations, setConcentrations] = useState([]);
+    const [minors, setMinors] = useState([]);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [undraggableItemIds, setUndraggableItemIds] = useState(new Set());
 
@@ -41,26 +38,37 @@ export default function Planner() {
                 }
                 const data = await response.json();
                 setConcentrations(data);
-                console.log(data);
             } catch (error) {
                 console.error('Error fetching concentrations:', error);
             }
         };
+
+        const fetchMinors = async () => {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/getMinors`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok for minors');
+                }
+                const data = await response.json();
+                setMinors(data);
+            } catch (error) {
+                console.log('Error fetching concetrations:', error);
+            }
+        };
         fetchTaskStatus();
         fetchConcentrations();
+        fetchMinors();
     }, []);
 
 
     const updateTaskStatusWithConcentration = async (concentrationId) => {
         try {
-            const { queue, ...columnsWithoutQueue } = columns; // Destructure to exclude 'queue'
-
             const response = await fetch(`${BACKEND_URL}/api/updateConcentration`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ taskStatus: columnsWithoutQueue, concentrationId: parseInt(concentrationId) }),
+                body: JSON.stringify({ taskStatus: columns, concentrationId: parseInt(concentrationId) }),
             });
 
             if (!response.ok) {
@@ -68,11 +76,33 @@ export default function Planner() {
             }
 
             const updatedColumns = await response.json();
-            setColumns({ ...updatedColumns, queue }); // Combine updated columns with existing queue
+            setColumns(updatedColumns);
         } catch (error) {
             console.error('Error updating task status with concentration:', error);
         }
     };
+
+    const updateTaskStatusWithMinors = async (minorId) => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/updateMinors`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ taskStatus: columns, minorId: parseInt(minorId) }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update task status with minor');
+            }
+
+            const updatedColumns = await response.json();
+            setColumns(columns);
+        } catch (error) {
+            console.error('Error updating task status with concentration:', error);
+        }
+    }
+
 
     const onDragStart = (start) => {
         console.log(columns);
@@ -127,6 +157,16 @@ export default function Planner() {
         }
     };
 
+    const concentrationOptions = concentrations.map(concentration => ({
+        label: concentration.name,
+        value: concentration.id.toString()
+    }));
+
+    const minorOptions = minors.map(minor => ({
+        label: minor.name,
+        value: minor.id.toString()
+    }));
+
 
     return (
         <div className="mt-2">
@@ -138,13 +178,21 @@ export default function Planner() {
                 <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
                     <div className="grid grid-cols-12 gap-2">
                         <div className="col-span-2 flex flex-col p-2">
-                            {minors.map((item) => (
-                                <AccordionItem key={item.id} id={item.id} title={item.title} options={item.options} onOptionSelect={(items) => updateTaskStatus(items, item.id)}/>
-                            ))}
+                            <AccordionItem
+                                key="Minors"
+                                id="Minors"
+                                title="Minors"
+                                options={minorOptions}
+                                updateTaskStatusWithConcentration={updateTaskStatusWithMinors}
+                            />
                             <div className="mb-4"></div>
-                            {concentrations.map((concentration) => (
-                                <AccordionItem key={concentration.id} id={'Concentrations'} title={concentration.name} options={[{ label: concentration.name, value: concentration.id.toString() }]}     updateTaskStatusWithConcentration={updateTaskStatusWithConcentration}/>
-                            ))}
+                            <AccordionItem
+                                key="Concentrations"
+                                id="Concentrations"
+                                title="Concentrations"
+                                options={concentrationOptions}
+                                updateTaskStatusWithConcentration={updateTaskStatusWithConcentration}
+                            />
                         </div>
 
                         <div className="col-span-8 flex justify-center">
@@ -153,7 +201,7 @@ export default function Planner() {
 
                         <div className="col-span-2 flex flex-col justify-center">
                             <div className="w-full max-w-xs">
-                                <GridItem column={columns.queue}/>
+                                <GridItem column={columns["AP/Summer"]}/>
                             </div>
                         </div>
                     </div>

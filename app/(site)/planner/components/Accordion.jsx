@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-export default function AccordionItem({ id, title, options, onOptionSelect, updateTaskStatusWithConcentration }) {
+export default function AccordionItem({ id, title, options, updateTaskStatusWithConcentration }) {
     const [isOpen, setIsOpen] = useState(true);
     const [selectedOption, setSelectedOption] = useState(null);
     const handleRadioChange = async (event) => {
@@ -10,6 +10,8 @@ export default function AccordionItem({ id, title, options, onOptionSelect, upda
         const selectedOption = options.find(option => option.value === event.target.value);
 
         if (id === 'Concentrations' && selectedOption) {
+            await updateTaskStatusWithConcentration(selectedOption.value);
+        } else if (id == 'Minors' && selectedOption) {
             await updateTaskStatusWithConcentration(selectedOption.value);
         }
     };

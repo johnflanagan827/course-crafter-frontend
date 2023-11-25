@@ -2,7 +2,6 @@ import React from 'react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 
 export default function ScheduleGrid({ columns }) {
-
     const semesters = [
         "Freshman Fall", "Freshman Spring", "Sophomore Fall", "Sophomore Spring",
         "Junior Fall", "Junior Spring", "Senior Fall", "Senior Spring"];
@@ -27,9 +26,6 @@ export default function ScheduleGrid({ columns }) {
             {rows.map((row, rowIndex) => (
                 <div key={rowIndex} className="flex flex-nowrap justify-start mb-4" style={{ maxWidth: "100%" }}>
                     {Object.entries(row).map(([columnId, column], index) => {
-                        if (column.name === 'queue') {
-                            return null;
-                        }
 
                         return (
                             <div key={columnId} className="flex flex-col items-center m-1 w-64">
@@ -62,7 +58,7 @@ export default function ScheduleGrid({ columns }) {
                                         )}
                                     </Droppable>
                                 </div>
-                                <div className={`w-full text-center bg-gray-200 p-1 rounded ${calculateTotalCredits(column) > 19 ? 'text-red-500' : ''}`}>
+                                <div className={`w-full text-center bg-gray-200 p-1 rounded ${calculateTotalCredits(column) > 19 || calculateTotalCredits(column) < 12 ? 'text-red-500' : ''}`}>
                                     <span className="text-xs">Total Credits: {calculateTotalCredits(column)}</span>
                                 </div>
                             </div>
