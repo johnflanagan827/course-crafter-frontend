@@ -43,14 +43,14 @@ export default function Dashboard() {
             <Header />
             <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Welcome to Course Crafter</h1>
             <p style={{ textAlign: 'center', marginTop: '50px' }}>
-                Course Crafter is the ultimate platform where students can effortlessly search for classes by name, receive personalized class recommendations, and efficiently devise a comprehensive four-year schedule plan. Dive in and simplify your academic journey today!
+                Course Crafter is the ultimate platform where students can effortlessly search for classes by name, receive personalized class ratings, and efficiently devise a comprehensive four-year schedule plan. Dive in and simplify your academic journey today!
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
                 <a href={`${FRONTEND_URL}/search`} className="block px-8 py-6 text-center text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
                     Search
                 </a>
-                <a href={`${FRONTEND_URL}/recommendation`} className="block px-8 py-6 text-black text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
-                    Course Recommendation
+                <a href={`${FRONTEND_URL}/rating`} className="block px-8 py-6 text-black text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
+                    Course Ratings
                 </a>
                 <a href={`${FRONTEND_URL}/planner`} className="block px-8 py-6 text-center text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl" style={{ margin: '0 20px' }}>
                     Schedule Planner

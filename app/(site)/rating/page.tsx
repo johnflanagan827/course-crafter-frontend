@@ -5,16 +5,39 @@ import Header from '@/app/components/header';
 
 // Define the Search component
 export default function Search() {
+    const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     // const token = localStorage.getItem('token');
     const [searchQuery, setSearchQuery] = useState('');
     const [classList, setClassList] = useState([]);
     const [errormsg, setErrormsg] = useState('');
     const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+    const [difficulty, setDifficulty] = useState<string | null>(null);
+    const [hoursOfWork, setHoursOfWork] = useState<string | null>(null);
+    const [grade, setGrade] = useState<string | null>(null);
+    const [submitMessage, setSubmitMessage] = useState<string>('');
 
-    useEffect(() => {
-        console.log(searchQuery);
-    }, [searchQuery])
+    const submit_rating = async () => {
+        const response = await fetch(`${BACKEND_URL}/api/rating`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ course: selectedCourse, difficulty: difficulty, hours: hoursOfWork, grade: grade }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setErrormsg('');
+            localStorage.setItem('token', data.access_token);
+            setSubmitMessage('Review submitted successfully!');
+        } else {
+            const data = await response.json();
+            setErrormsg(data.msg);
+            setSubmitMessage('');
+        }
+    };
 
     // Function to fetch search results
     const fetchSearch = async () => {
@@ -37,11 +60,26 @@ export default function Search() {
         }
     }
 
+
     const handleCourseClick = (course: string) => {
-        console.log('Selected Course:', course);
         setSelectedCourse(course);
+        setSubmitMessage('');
     };
-    // Styles for heading
+    const handleDifficultyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDifficulty(e.target.value);
+        setSubmitMessage('');
+    };
+
+    const handleHoursOfWorkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setHoursOfWork(e.target.value);
+        setSubmitMessage('');
+    };
+
+    const handleGradeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setGrade(e.target.value);
+        setSubmitMessage('');
+    };
+
     const headingStyle: React.CSSProperties = {
         fontFamily: 'Monaco',
     };
@@ -49,9 +87,9 @@ export default function Search() {
     return (
         <div>
             <Header />
-            <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Recommend a Course!</h1>
+            <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Rate a Course!</h1>
             <p style={{ textAlign: 'center', marginTop: '50px' }}>
-                Welcome to our Course Recommendation Page! This tool allows you to make course recommendations that other students can use in the Schedule Planner. First, search for the course you would like to recommend. Then, on the right side of the screen, we've streamlined the course review process for you. Share your insights by filling out our quick 3-question form.
+                Welcome to our Course Rating Page! This tool allows you to rate courses that other students can use when putting together a schedule. First, search for the course you would like to rate. Then, on the right side of the screen, we've streamlined the course review process for you. Share your insights by filling out our quick 3-question form.
             </p>
             <div className="flex justify-center">
                 <div className="w-1/2 p-6">
@@ -89,7 +127,7 @@ export default function Search() {
                 </div>
                 <div className="w-1 border-r"></div>
                 <div className="mb-4">
-                    <h3 className='text-3xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>
+                    <h3 className='text-3xl font-bold flex justify-center mb-8 mt-10' style={headingStyle}>
                         Course Review Questions
                     </h3>
                     {selectedCourse && (
@@ -106,7 +144,7 @@ export default function Search() {
                                         type="radio"
                                         name="difficulty"
                                         value={rating}
-                                        onChange={(e) => console.log(e.target.value)}
+                                        onChange={handleDifficultyChange}
                                         className="mr-2"
                                     />
                                     {rating}
@@ -115,15 +153,15 @@ export default function Search() {
                         </div>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-lg mb-2">How many hours of work were assigned each week?</label>
+                        <label className="block text-lg mb-2">How many hours each week of coursework?</label>
                         <div className="flex space-x-4">
-                            {['<1', '1-2', '3-4', '4+'].map((rating) => (
+                            {['<2', '2-3', '3-5', '5+'].map((rating) => (
                                 <label key={rating} className="flex items-center">
                                     <input
                                         type="radio"
                                         name="hoursOfWork"
                                         value={rating}
-                                        onChange={(e) => console.log(e.target.value)}
+                                        onChange={handleHoursOfWorkChange}
                                         className="mr-2"
                                     />
                                     {rating}
@@ -131,8 +169,8 @@ export default function Search() {
                             ))}
                         </div>
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-lg mb-2">What was your grade in the course?</label>
+                    <div className="mb-8">
+                        <label className="block text-lg mb-2">What was your final grade in the course?</label>
                         <div className="flex space-x-4">
                             {['A', 'B', 'C', 'D', 'F'].map((rating) => (
                                 <label key={rating} className="flex items-center">
@@ -140,7 +178,7 @@ export default function Search() {
                                         type="radio"
                                         name="grade"
                                         value={rating}
-                                        onChange={(e) => console.log(e.target.value)}
+                                        onChange={handleGradeChange}
                                         className="mr-2"
                                     />
                                     {rating}
@@ -148,8 +186,19 @@ export default function Search() {
                             ))}
                         </div>
                     </div>
+                    <div className="flex flex-col items-center">
+                        <a
+                            className="block px-4 py-3 text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl"
+                            style={{ margin: '0 20px', textDecoration: 'none' }}
+                            onClick={submit_rating}
+                        >
+                            Submit Review
+                        </a>
+                        {submitMessage && (
+                            <div className="text-green-500 text-lg mt-2">{submitMessage}</div>
+                        )}
+                    </div>
                 </div>
-
             </div>
         </div>
     );
