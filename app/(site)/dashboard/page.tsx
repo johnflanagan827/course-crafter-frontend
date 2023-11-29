@@ -6,6 +6,7 @@ import Header from '@/app/components/header';
 export default function Dashboard() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
+    const pageTitle = "Dashboard"
     // const token = localStorage.getItem('token');
     const [searchQuery, setSearchQuery] = useState('');
     const [classList, setClassList] = useState([]);
@@ -40,7 +41,7 @@ export default function Dashboard() {
 
     return (
         <div>
-            <Header />
+            <Header pageName={pageTitle} />
             <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Welcome to Course Crafter</h1>
             <p style={{ textAlign: 'center', marginTop: '50px' }}>
                 Course Crafter is the ultimate platform where students can effortlessly search for classes by name, receive personalized class ratings, and efficiently devise a comprehensive four-year schedule plan. Dive in and simplify your academic journey today!

@@ -7,6 +7,7 @@ import Header from '@/app/components/header';
 export default function Search() {
     const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const pageTitle = "Rate a Course!";
     // const token = localStorage.getItem('token');
     const [searchQuery, setSearchQuery] = useState('');
     const [classList, setClassList] = useState([]);
@@ -16,6 +17,8 @@ export default function Search() {
     const [hoursOfWork, setHoursOfWork] = useState<string | null>(null);
     const [grade, setGrade] = useState<string | null>(null);
     const [submitMessage, setSubmitMessage] = useState<string>('');
+    const [submissionStatus, setSubmissionStatus] = useState<boolean | null>(null);
+
 
     const submit_rating = async () => {
         const response = await fetch(`${BACKEND_URL}/api/rating`, {
@@ -32,10 +35,12 @@ export default function Search() {
             setErrormsg('');
             localStorage.setItem('token', data.access_token);
             setSubmitMessage('Review submitted successfully!');
+            setSubmissionStatus(true)
+            console.log(submissionStatus)
         } else {
-            const data = await response.json();
-            setErrormsg(data.msg);
-            setSubmitMessage('');
+            setSubmitMessage('Select a course and answer all questions!');
+            setSubmissionStatus(false)
+            console.log(submissionStatus)
         }
     };
 
@@ -86,11 +91,10 @@ export default function Search() {
 
     return (
         <div>
-            <Header />
-            <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Rate a Course!</h1>
-            <p style={{ textAlign: 'center', marginTop: '50px' }}>
+            <Header pageName={pageTitle} />
+            <h3 style={{ textAlign: 'center', marginTop: '50px' }}>
                 Welcome to our Course Rating Page! This tool allows you to rate courses that other students can use when putting together a schedule. First, search for the course you would like to rate. Then, on the right side of the screen, we've streamlined the course review process for you. Share your insights by filling out our quick 3-question form.
-            </p>
+            </h3>
             <div className="flex justify-center">
                 <div className="w-1/2 p-6">
                     <h3 className='text-3xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Search for Classes by Name</h3>
@@ -125,78 +129,81 @@ export default function Search() {
                         <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>{errormsg}</div>
                     </div>
                 </div>
-                <div className="w-1 border-r"></div>
-                <div className="mb-4">
-                    <h3 className='text-3xl font-bold flex justify-center mb-8 mt-10' style={headingStyle}>
-                        Course Review Questions
-                    </h3>
-                    {selectedCourse && (
-                        <p className='text-lg font-semibold mb-2'>
-                            Selected Course: {selectedCourse}
-                        </p>
-                    )}
-                    <div className="mb-4">
-                        <label className="block text-lg mb-2">How difficult would you rate this course?</label>
-                        <div className="flex space-x-4">
-                            {[1, 2, 3, 4, 5].map((rating) => (
-                                <label key={rating} className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="difficulty"
-                                        value={rating}
-                                        onChange={handleDifficultyChange}
-                                        className="mr-2"
-                                    />
-                                    {rating}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-lg mb-2">How many hours each week of coursework?</label>
-                        <div className="flex space-x-4">
-                            {['<2', '2-3', '3-5', '5+'].map((rating) => (
-                                <label key={rating} className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="hoursOfWork"
-                                        value={rating}
-                                        onChange={handleHoursOfWorkChange}
-                                        className="mr-2"
-                                    />
-                                    {rating}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="mb-8">
-                        <label className="block text-lg mb-2">What was your final grade in the course?</label>
-                        <div className="flex space-x-4">
-                            {['A', 'B', 'C', 'D', 'F'].map((rating) => (
-                                <label key={rating} className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="grade"
-                                        value={rating}
-                                        onChange={handleGradeChange}
-                                        className="mr-2"
-                                    />
-                                    {rating}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <a
-                            className="block px-4 py-3 text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl"
-                            style={{ margin: '0 20px', textDecoration: 'none' }}
-                            onClick={submit_rating}
-                        >
-                            Submit Review
-                        </a>
-                        {submitMessage && (
-                            <div className="text-green-500 text-lg mt-2">{submitMessage}</div>
+                <div className="w-1/2 flex items-start">
+                    <div className="w-3/4 mb-4 flex flex-col">
+                        <h3 className='text-3xl font-bold flex justify-center mb-14 mt-10' style={headingStyle}>
+                            Course Review Questions
+                        </h3>
+                        {selectedCourse && (
+                            <p className='text-lg font-semibold mb-12 text-center'>
+                                Selected Course: {selectedCourse}
+                            </p>
                         )}
+                        <div className="mb-4">
+                            <label className="block text-lg mb-2">How difficult would you rate this course?</label>
+                            <div className="flex space-x-4">
+                                {[1, 2, 3, 4, 5].map((rating) => (
+                                    <label key={rating} className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="difficulty"
+                                            value={rating}
+                                            onChange={handleDifficultyChange}
+                                            className="mr-2"
+                                        />
+                                        {rating}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-lg mb-2">How many hours each week of coursework?</label>
+                            <div className="flex space-x-4">
+                                {['<2', '2-3', '3-5', '5+'].map((rating) => (
+                                    <label key={rating} className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="hoursOfWork"
+                                            value={rating}
+                                            onChange={handleHoursOfWorkChange}
+                                            className="mr-2"
+                                        />
+                                        {rating}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="mb-8">
+                            <label className="block text-lg mb-2">What was your final grade in the course?</label>
+                            <div className="flex space-x-4">
+                                {['A', 'B', 'C', 'D', 'F'].map((rating) => (
+                                    <label key={rating} className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="grade"
+                                            value={rating}
+                                            onChange={handleGradeChange}
+                                            className="mr-2"
+                                        />
+                                        {rating}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <a
+                                className="block px-4 py-3 text-black duration-150 font-medium bg-blue-300 rounded-lg hover:bg-blue-500 active:bg-blue-700 md:text-xl"
+                                style={{ margin: '0 20px', textDecoration: 'none' }}
+                                onClick={submit_rating}
+                            >
+                                Submit Review
+                            </a>
+                            {submitMessage && (
+                                <div className={submissionStatus === true ? "text-green-500 text-lg mt-2" : "text-red-500 text-lg mt-2"}>
+                                    {submitMessage}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

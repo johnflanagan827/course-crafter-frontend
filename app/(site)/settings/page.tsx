@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import Header from '@/app/components/header';
 
 export default function Settings() {
@@ -9,6 +9,7 @@ export default function Settings() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     const [token, setToken] = useState('');
+    const pageTitle = "Settings";
 
     useEffect(() => {
         // @ts-ignore
@@ -19,7 +20,7 @@ export default function Settings() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
 
-    const fetchUpdate= async () => {
+    const fetchUpdate = async () => {
         const response = await fetch(`${BACKEND_URL}/api/updateAccount`, {
             method: 'PUT',
             headers: {
@@ -27,7 +28,7 @@ export default function Settings() {
                 'Authorization': `Bearer ${token}`,
             },
             credentials: 'include',
-            body: JSON.stringify({ current_password:  currentPassword, password: newPassword}),
+            body: JSON.stringify({ current_password: currentPassword, password: newPassword }),
         });
 
         if (response.ok) {
@@ -38,26 +39,26 @@ export default function Settings() {
     };
 
     const fetchDelete = async () => {
-            const response = await fetch(`${BACKEND_URL}/api/deleteAccount`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                credentials: 'include',
-            });
+        const response = await fetch(`${BACKEND_URL}/api/deleteAccount`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            credentials: 'include',
+        });
 
-            if (response.ok) {
-                const data = await response.json();
-                router.push('/login')
-            } else {
-                const data = await response.json();
-            }
-        };
+        if (response.ok) {
+            const data = await response.json();
+            router.push('/login')
+        } else {
+            const data = await response.json();
+        }
+    };
 
     return (
         <div>
-            <Header />
+            <Header pageName={pageTitle} />
             <div>
                 <div className='grid grid-cols-12 mt-20'>
                     <form className='col-start-2 col-span-10 bg-gray-100 p-5 rounded-xl' onSubmit={(e) => fetchUpdate()}>

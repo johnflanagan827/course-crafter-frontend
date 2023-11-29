@@ -5,6 +5,7 @@ import Header from '@/app/components/header';
 
 export default function Search() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+    const pageTitle = "Search Page";
     // const token = localStorage.getItem('token');
     const [searchQuery, setSearchQuery] = useState('');
     const [classList, setClassList] = useState([]);
@@ -40,8 +41,8 @@ export default function Search() {
 
     return (
         <div>
-            <Header />
-            <h1 className='text-5xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Search for Classes by Name</h1>
+            <Header pageName={pageTitle} />
+            <h1 className='text-3xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Lookup for Classes by Name</h1>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
