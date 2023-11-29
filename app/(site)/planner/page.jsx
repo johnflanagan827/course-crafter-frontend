@@ -5,6 +5,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ScheduleGrid from "./components/ScheduleGrid";
 import AccordionItem from './components/Accordion';
 import GridItem from './components/GridItem';
+import Header from "../../components/header";
 
 
 export default function Planner() {
@@ -14,6 +15,7 @@ export default function Planner() {
     const [minors, setMinors] = useState([]);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [undraggableItemIds, setUndraggableItemIds] = useState(new Set());
+    const pageTitle = "Planner";
 
     useEffect(() => {
         const fetchTaskStatus = async () => {
@@ -167,17 +169,13 @@ export default function Planner() {
         value: minor.id.toString()
     }));
 
-
     return (
-        <div className="mt-2">
-            <h2 className="text-center text-4xl font-black mb-3">4-Year Plan</h2>
-            <div className="flex justify-center mb-6">
-                <p className="max-w-screen-lg text-xs">Here will be a description of what this section does, so the user knows what to do...</p>
-            </div>
+        <div>
+            <Header pageName={pageTitle} />
             {isDataLoaded ? (
                 <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-                    <div className="grid grid-cols-12 gap-2">
-                        <div className="col-span-2 flex flex-col p-2">
+                    <div className="lg:grid lg:grid-cols-12 lg:gap-2 flex flex-col">
+                        <div className="lg:col-span-2 flex flex-col p-2">
                             <AccordionItem
                                 key="Minors"
                                 id="Minors"
@@ -195,11 +193,11 @@ export default function Planner() {
                             />
                         </div>
 
-                        <div className="col-span-8 flex justify-center">
+                        <div className="lg:col-span-8 flex justify-center">
                             <ScheduleGrid columns={columns} />
                         </div>
 
-                        <div className="col-span-2 flex flex-col justify-center">
+                        <div className="lg:col-span-2 flex flex-col justify-center items-center mr-5">
                             <div className="w-full max-w-xs">
                                 <GridItem column={columns["AP/Summer"]}/>
                             </div>

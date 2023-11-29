@@ -15,7 +15,6 @@ export default function Header({ pageName }) {
                     </a>
                 </div>
                 <div className="flex-grow flex items-center justify-center">
-                    {/* Display the page name */}
                     <h1 style={{ fontFamily: 'Monaco, monospace', fontSize: '2rem' }} className="text-2xl font-semibold">{pageName}</h1>
                 </div>
                 <div className="flex items-center gap-x-3 mt-6 md:mt-0 sm:flex">

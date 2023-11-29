@@ -18,7 +18,7 @@ export default function GridItem({ column }) {
     };
 
     return (
-        <div className="flex flex-col items-center m-1 w-64">
+        <div className="flex flex-col items-center m-1">
             <h2 className="text-sm font-medium">{column.name}</h2>
             <div className="m-1">
                 <Droppable droppableId={column.name}>
@@ -26,7 +26,7 @@ export default function GridItem({ column }) {
                         <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
-                            className={`p-1 w-64 h-[296px] overflow-y-auto overflow-x-hidden ${snapshot.isDraggingOver ? 'bg-blue-200' : 'bg-gray-300'} rounded`}
+                            className={`p-1 h-[296px] lg-planner:w-48 xl-planner:w-48 2xl-planner:w-56 w-64 overflow-y-auto overflow-x-hidden ${snapshot.isDraggingOver ? 'bg-blue-200' : 'bg-gray-300'} rounded`}
                         >
                             {column.items.map((item, index) => (
                                 <Draggable key={item.id} draggableId={item.id} index={index} isDragDisabled={item.isFixed}>
@@ -48,7 +48,7 @@ export default function GridItem({ column }) {
                     )}
                 </Droppable>
             </div>
-            <div className="w-full text-center bg-gray-200 p-1 rounded">
+            <div className="lg-planner:w-48 xl-planner:w-48 2xl-planner:w-56 w-64 text-center bg-gray-200 p-1 rounded">
                 <span className="text-xs">Total Credits: {calculateTotalCredits(column)}</span>
             </div>
         </div>
