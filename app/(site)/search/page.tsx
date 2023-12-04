@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/app/components/header';
 
 interface CourseModalProps {
-    courseDetails?: string[]; // Adjust the type based on the actual data structure
+    courseDetails?: string[];
     closeModal: () => void;
 }
 const CourseModal: React.FC<CourseModalProps> = ({ courseDetails, closeModal }) => {
@@ -20,7 +20,7 @@ const CourseModal: React.FC<CourseModalProps> = ({ courseDetails, closeModal }) 
 
     return (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 max-w-md">
+            <div className="bg-white p-8 max-w-md overflow-y-auto max-h-full">
                 <h2 className="text-2xl font-bold mb-4">{name}</h2>
                 <p>Subject: {subject}</p>
                 <hr className="my-2" />
@@ -39,23 +39,23 @@ const CourseModal: React.FC<CourseModalProps> = ({ courseDetails, closeModal }) 
 export default function Search() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const pageTitle = "Search Page";
-    // const token = localStorage.getItem('token');
     const [searchQuery, setSearchQuery] = useState('');
     const [classList, setClassList] = useState([]);
     const [errormsg, setErrormsg] = useState('');
     const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
     const [courseDetails, setCourseDetails] = useState(null);
+    const [selectedFilter, setSelectedFilter] = useState('');
+    const [recList, setRecList] = useState<{ name: string; difficulty: number; hours: string; grade: string }[]>([]);
 
     useEffect(() => {
-        console.log(searchQuery);
-    }, [searchQuery])
+        fetchRecClasses();
+    }, []);
 
     const fetchSearch = async () => {
         const response = await fetch(`${BACKEND_URL}/api/search`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                // 'Authorization': `Bearer ${token}`,
                 'search': searchQuery
             },
         });
@@ -65,10 +65,73 @@ export default function Search() {
             setClassList(data);
         } else {
             setClassList([]);
-            // @ts-ignore
             setErrormsg(data.msg);
         }
     }
+
+    const handleCourseClick = (course: string) => {
+        setSelectedCourse(course);
+        getCourseDetails(course)
+            .then((details) => {
+                setCourseDetails(details);
+            })
+            .catch((error) => {
+                console.error('Error fetching course details:', error.message);
+                setCourseDetails(null);
+            });
+    };
+
+    const fetchRecClasses = async () => {
+        const response = await fetch(`${BACKEND_URL}/api/reqClasses`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        if (response.ok) {
+            const formattedData = data.map((course: any[]) => {
+                return {
+                    name: course[0],
+                    difficulty: parseFloat(course[1]).toFixed(2),
+                    hours: course[2],
+                    grade: course[3]
+                };
+            });
+
+            setErrormsg('');
+            setRecList(formattedData);
+        } else {
+            setRecList([]);
+            setErrormsg(data.msg);
+        }
+    }
+
+    const handleFilterChange = (filterType: string) => {
+        setSelectedFilter(filterType);
+    };
+
+    const applyFilters = () => {
+        if (selectedFilter === 'difficulty') {
+            return recList.sort((a, b) => a.difficulty - b.difficulty);
+        } else if (selectedFilter === 'hours') {
+            return recList.sort((a, b) => {
+                const getOrder = (hours: string) => {
+                    if (hours === "<2") return 0;
+                    if (hours === "2-3") return 1;
+                    if (hours === "3-5") return 2;
+                    if (hours === "5+") return 3;
+                    return -1; // For unknown values
+                };
+
+                return getOrder(a.hours) - getOrder(b.hours);
+            });
+        } else if (selectedFilter === 'grade') {
+            return recList.sort((a, b) => a.grade.localeCompare(b.grade));
+        } else {
+            return recList;
+        }
+    };
 
     const getCourseDetails = async (course: string) => {
         const response = await fetch(`${BACKEND_URL}/api/course_details?course=${encodeURIComponent(course)}`, {
@@ -91,21 +154,8 @@ export default function Search() {
 
     };
 
-
     const headingStyle: React.CSSProperties = {
         fontFamily: 'Monaco',
-    };
-
-    const handleCourseClick = (course: string) => {
-        setSelectedCourse(course);
-        getCourseDetails(course)
-            .then((details) => {
-                setCourseDetails(details);
-            })
-            .catch((error) => {
-                console.error('Error fetching course details:', error.message);
-                setCourseDetails(null);
-            });
     };
 
     const closeModal = () => {
@@ -153,7 +203,53 @@ export default function Search() {
                         <CourseModal courseDetails={courseDetails} closeModal={closeModal} />
                     )}
                 </div>
-                <div className="w-1/2 flex items-start">
+                <div className="w-1/2 p-6">
+                    <h3 className='text-3xl font-bold flex justify-center mb-10 mt-4' style={headingStyle}>Course Recommendations</h3>
+                    <div className="mb-4">
+                        <span className="mr-3 font-bold">Filter:</span>
+                        <label className="mr-3">
+                            <input
+                                type="radio"
+                                name="filter"
+                                value="difficulty"
+                                checked={selectedFilter === 'difficulty'}
+                                onChange={() => handleFilterChange('difficulty')}
+                            />
+                            Difficulty (1-5)
+                        </label>
+
+                        <label className="mr-3">
+                            <input
+                                type="radio"
+                                name="filter"
+                                value="hours"
+                                checked={selectedFilter === 'hours'}
+                                onChange={() => handleFilterChange('hours')}
+                            />
+                            Hours (&lt;2-5+)
+                        </label>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="filter"
+                                value="grade"
+                                checked={selectedFilter === 'grade'}
+                                onChange={() => handleFilterChange('grade')}
+                            />
+                            Grade (A-F)
+                        </label>
+                    </div>
+                    <div className="h-72 overflow-y-auto h-full p-4 border rounded">
+                        {applyFilters().map((course, index) => (
+                            <div key={index} className="mb-4">
+                                <p className="font-bold">{index + 1}. {course.name}</p>
+                                <p>Difficulty: {course.difficulty}</p>
+                                <p>Hours: {course.hours}</p>
+                                <p>Grade: {course.grade}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
