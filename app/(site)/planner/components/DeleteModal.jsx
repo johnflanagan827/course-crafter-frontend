@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import {toast} from "react-toastify";
 
-export default function DeleteModal({ setShowDeleteModal, setColumns, scheduleName, setScheduleName }) {
+export default function DeleteModal({ setShowDeleteModal, setColumns, scheduleName, setScheduleName, schedules, setSchedules }) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 
@@ -22,6 +22,8 @@ export default function DeleteModal({ setShowDeleteModal, setColumns, scheduleNa
                 toast.success('Schedule deleted successfully', { position: "top-right", pauseOnHover: false, autoClose: 5000 });
                 setColumns(null);
                 setScheduleName('');
+                setSchedules(schedules.filter(schedule => schedule !== scheduleName));
+
             } else {
                 const errorText = await response.text();
                 toast.error(`Error deleting schedule: ${errorText}`, { position: "top-right", pauseOnHover: false, autoClose: 5000 });

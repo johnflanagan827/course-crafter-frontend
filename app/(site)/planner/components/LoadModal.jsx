@@ -2,10 +2,9 @@
 
 import React, { useState } from 'react';
 
-export default function LoadModal({ setShowLoadModal, setColumns, setScheduleName, setIsLoading, schedules }) {
+export default function LoadModal({ setShowLoadModal, setColumns, setScheduleName, setIsLoading, schedules, minors, setSelectedMinor, concentrations, setSelectedConcentration }) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [selectedSchedule, setSelectedSchedule] = useState('');
-
 
     const loadSchedule = async () => {
         if (!selectedSchedule) {
@@ -30,6 +29,8 @@ export default function LoadModal({ setShowLoadModal, setColumns, setScheduleNam
             const data = await response.json();
             const { ScheduleName, ...columnData } = data;
             setColumns(columnData);
+            updateSelectedMinor(columnData, minors);
+            updateSelectedConcentration(columnData, concentrations);
             setScheduleName(ScheduleName);
             setIsLoading(false);
 
@@ -38,6 +39,50 @@ export default function LoadModal({ setShowLoadModal, setColumns, setScheduleNam
             setIsLoading(false);
         }
     };
+
+    const updateSelectedMinor = (columns, minors) =>  {
+        let selectedMinorId = '0';
+
+        for (const semester in columns) {
+            const classes = columns[semester].items;
+            for (const classObj of classes) {
+                if (classObj.minorName) {
+                    const minor = minors.find(minor => minor.name === classObj.minorName);
+                    if (minor) {
+                        selectedMinorId = minor.id.toString();
+                        break;
+                    }
+                }
+            }
+
+            if (selectedMinorId !== '0') {
+                break;
+            }
+        }
+        setSelectedMinor(selectedMinorId);
+    }
+
+    const updateSelectedConcentration = (columns, concentrations) =>  {
+        let selectedConcentrationId = '0';
+
+        for (const semester in columns) {
+            const classes = columns[semester].items;
+            for (const classObj of classes) {
+                if (classObj.concentrationName) {
+                    const concentration = concentrations.find(concentrations => concentrations.name === classObj.concentrationName);
+                    if (concentration) {
+                        selectedConcentrationId = concentration.id.toString();
+                        break;
+                    }
+                }
+            }
+
+            if (selectedConcentrationId !== '0') {
+                break;
+            }
+        }
+        setSelectedConcentration(selectedConcentrationId);
+    }
 
     return (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">

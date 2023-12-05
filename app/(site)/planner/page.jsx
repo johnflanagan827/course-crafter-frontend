@@ -18,14 +18,15 @@ export default function Planner() {
     const [columns, setColumns] = useState(null);
     const [concentrations, setConcentrations] = useState([]);
     const [minors, setMinors] = useState([]);
-    const [schedules, setSchedules] = useState([]);
+    const [schedules, setSchedules] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [undraggableItemIds, setUndraggableItemIds] = useState(new Set());
     const [showLoadModal, setShowLoadModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [scheduleName, setScheduleName] = useState('');
-    const [message, setMessage] = useState('');
+    const [selectedMinor, setSelectedMinor] = useState('0');
+    const [selectedConcentration, setSelectedConcentration] = useState('0');
     const pageTitle = "Planner";
 
     useEffect(() => {
@@ -103,14 +104,14 @@ export default function Planner() {
     };
 
 
-    const updateTaskStatusWithConcentration = async (concentrationId) => {
+    const updateTaskStatusWithConcentration = async (concentrationName) => {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/updateConcentration`, {
+            const response = await fetch(`${BACKEND_URL}/api/updateConcentrations`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ taskStatus: columns, concentrationId: parseInt(concentrationId) }),
+                body: JSON.stringify({ taskStatus: columns, concentrationName: concentrationName }),
             });
 
             if (!response.ok) {
@@ -122,7 +123,8 @@ export default function Planner() {
         } catch (error) {
             console.error('Error updating task status with concentration:', error);
         }
-    };
+    }
+
 
     const updateTaskStatusWithMinors = async (minorName) => {
         try {
@@ -141,7 +143,7 @@ export default function Planner() {
             const updatedColumns = await response.json();
             setColumns(updatedColumns);
         } catch (error) {
-            console.error('Error updating task status with concentration:', error);
+            console.error('Error updating task status with minor:', error);
         }
     }
 
@@ -212,8 +214,8 @@ export default function Planner() {
         <div>
             <ToastContainer />
             {showCreateModal && <CreateModal setShowModal={setShowCreateModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} schedules={schedules} setSchedules={setSchedules}/>}
-            {showLoadModal && <LoadModal setShowLoadModal={setShowLoadModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} schedules={schedules} />}
-            {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal} setColumns={setColumns} scheduleName={scheduleName} setScheduleName={setScheduleName} />}
+            {showLoadModal && <LoadModal setShowLoadModal={setShowLoadModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} schedules={schedules}  minors={minors} setSelectedMinor={setSelectedMinor} concentrations={concentrations} setSelectedConcentration={setSelectedConcentration}/>}
+            {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal} setColumns={setColumns} scheduleName={scheduleName} setScheduleName={setScheduleName} schedules={schedules} setSchedules={setSchedules}/>}
 
             <Header pageName={pageTitle} />
 
@@ -228,7 +230,9 @@ export default function Planner() {
                                     id="Minors"
                                     title="Minors"
                                     options={minorOptions}
-                                    updateTaskStatusWithConcentration={updateTaskStatusWithMinors}
+                                    selected={selectedMinor}
+                                    setSelected={setSelectedMinor}
+                                    updateTaskStatus={updateTaskStatusWithMinors}
                                 />
                                 <div className="mb-4"></div>
                                 <AccordionItem
@@ -236,7 +240,9 @@ export default function Planner() {
                                     id="Concentrations"
                                     title="Concentrations"
                                     options={concentrationOptions}
-                                    updateTaskStatusWithConcentration={updateTaskStatusWithConcentration}
+                                    selected={selectedConcentration}
+                                    setSelected={setSelectedConcentration}
+                                    updateTaskStatus={updateTaskStatusWithConcentration}
                                 />
                             </div>
 
@@ -263,10 +269,10 @@ export default function Planner() {
                     </div>
                 </div>
             )}
-            <div className="mt-4">
+            <div className={`mt-4 ${!schedules ? 'hidden' : null}`}>
                 <div className="flex justify-center items-center gap-10">
                     <button onClick = {() => setShowCreateModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-green-100 rounded-full hover:bg-green-200 active:bg-green-300 focus:outline-none focus:ring focus:ring-green-300">Create Schedule</button>
-                    <button onClick = {() => setShowLoadModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-blue-100 rounded-full hover:bg-blue-200 active:bg-blue-300 focus:outline-none focus:ring focus:ring-blue-300">Load Schedule</button>
+                    <button onClick = {() => setShowLoadModal(true)} disabled={schedules?.length === 0} className="px-10 py-4 text-lg duration-200 font-semibold bg-blue-100 rounded-full hover:bg-blue-200 active:bg-blue-300 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-300 disabled:text-gray-600">Load Schedule</button>
                     <button onClick = {() => saveSchedule()} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-yellow-100 rounded-full hover:bg-yellow-200 active:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 disabled:bg-gray-300 disabled:text-gray-600">Save Schedule</button>
                     <button onClick = {() => setShowDeleteModal(true)} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-red-100 rounded-full hover:bg-red-200 active:bg-red-300 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-300 disabled:text-gray-600">Delete Schedule</button>
                 </div>
