@@ -240,7 +240,7 @@ export default function Search() {
                             Grade (A-F)
                         </label>
                     </div>
-                    <div className="h-72 overflow-y-auto h-full p-4 border rounded">
+                    <div className="h-80 overflow-y-auto h-full p-4 border rounded">
                         {applyFilters().map((course, index) => (
                             <div key={index} className="mb-4">
                                 <p className="font-bold">{index + 1}. {course.name}</p>
