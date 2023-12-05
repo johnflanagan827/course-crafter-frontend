@@ -1,33 +1,11 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-export default function LoadModal({ setShowLoadModal, setColumns, setScheduleName, setIsLoading }) {
+export default function LoadModal({ setShowLoadModal, setColumns, setScheduleName, setIsLoading, schedules }) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-    const [schedules, setSchedules] = useState([]);
     const [selectedSchedule, setSelectedSchedule] = useState('');
 
-    useEffect(() => {
-        const fetchSchedules = async () => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/getScheduleNames`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setSchedules(data);
-            } catch (error) {
-                console.error('Error fetching data: ', error);
-            }
-        };
-        fetchSchedules();
-    }, []);
 
     const loadSchedule = async () => {
         if (!selectedSchedule) {
@@ -53,10 +31,11 @@ export default function LoadModal({ setShowLoadModal, setColumns, setScheduleNam
             const { ScheduleName, ...columnData } = data;
             setColumns(columnData);
             setScheduleName(ScheduleName);
+            setIsLoading(false);
 
         } catch (error) {
             console.error('Error loading schedule: ', error);
-            setIsLoading(true);
+            setIsLoading(false);
         }
     };
 

@@ -7,6 +7,7 @@ import AccordionItem from './components/Accordion';
 import GridItem from './components/GridItem';
 import LoadModal from './components/LoadModal';
 import CreateModal from "./components/CreateModal";
+import DeleteModal from "./components/DeleteModal";
 import Header from "../../components/header";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,6 +18,7 @@ export default function Planner() {
     const [columns, setColumns] = useState(null);
     const [concentrations, setConcentrations] = useState([]);
     const [minors, setMinors] = useState([]);
+    const [schedules, setSchedules] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [undraggableItemIds, setUndraggableItemIds] = useState(new Set());
     const [showLoadModal, setShowLoadModal] = useState(false);
@@ -52,8 +54,29 @@ export default function Planner() {
                 console.log('Error fetching concetrations:', error);
             }
         };
+
+        const fetchSchedules = async () => {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/getScheduleNames`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setSchedules(data);
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+            }
+        };
+
         fetchConcentrations();
         fetchMinors();
+        fetchSchedules();
     }, []);
 
 
@@ -188,8 +211,9 @@ export default function Planner() {
     return (
         <div>
             <ToastContainer />
-            {showLoadModal && <LoadModal setShowLoadModal={setShowLoadModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} />}
-            {showCreateModal && <CreateModal setShowModal={setShowCreateModal} />}
+            {showCreateModal && <CreateModal setShowModal={setShowCreateModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} schedules={schedules} setSchedules={setSchedules}/>}
+            {showLoadModal && <LoadModal setShowLoadModal={setShowLoadModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} schedules={schedules} />}
+            {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal} setColumns={setColumns} scheduleName={scheduleName} setScheduleName={setScheduleName} />}
 
             <Header pageName={pageTitle} />
 
@@ -244,7 +268,7 @@ export default function Planner() {
                     <button onClick = {() => setShowCreateModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-green-100 rounded-full hover:bg-green-200 active:bg-green-300 focus:outline-none focus:ring focus:ring-green-300">Create Schedule</button>
                     <button onClick = {() => setShowLoadModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-blue-100 rounded-full hover:bg-blue-200 active:bg-blue-300 focus:outline-none focus:ring focus:ring-blue-300">Load Schedule</button>
                     <button onClick = {() => saveSchedule()} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-yellow-100 rounded-full hover:bg-yellow-200 active:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 disabled:bg-gray-300 disabled:text-gray-600">Save Schedule</button>
-                    <button onClick = {() => setShowDeleteModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-red-100 rounded-full hover:bg-red-200 active:bg-red-300 focus:outline-none focus:ring focus:ring-red-300">Delete Schedule</button>
+                    <button onClick = {() => setShowDeleteModal(true)} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-red-100 rounded-full hover:bg-red-200 active:bg-red-300 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-300 disabled:text-gray-600">Delete Schedule</button>
                 </div>
             </div>
         </div>
