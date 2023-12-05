@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 export default function AccordionItem({ id, title, options, updateTaskStatusWithConcentration }) {
     const [isOpen, setIsOpen] = useState(true);
-    const [selectedOption, setSelectedOption] = useState(null);
+    const [selectedOption, setSelectedOption] = useState('0');
     const handleRadioChange = async (event) => {
         setSelectedOption(event.target.value);
         const selectedOption = options.find(option => option.value === event.target.value);
@@ -12,7 +12,7 @@ export default function AccordionItem({ id, title, options, updateTaskStatusWith
         if (id === 'Concentrations' && selectedOption) {
             await updateTaskStatusWithConcentration(selectedOption.value);
         } else if (id == 'Minors' && selectedOption) {
-            await updateTaskStatusWithConcentration(selectedOption.value);
+            await updateTaskStatusWithConcentration(selectedOption.label);
         }
     };
 
@@ -20,7 +20,7 @@ export default function AccordionItem({ id, title, options, updateTaskStatusWith
         <div>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex justify-between items-center w-full font-medium text-left border rounded-lg p-4 bg-purple-700 text-white hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                className="flex justify-between items-center w-full font-medium text-left border rounded-lg p-4 bg-blue-300 hover:bg-blue-500 focus:outline-none"
             >
                 {title}
                 <svg className={`w-4 h-4 transform ${isOpen ? 'rotate-180' : 'rotate-0'}`} viewBox="0 0 20 20" fill="currentColor">

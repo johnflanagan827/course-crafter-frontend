@@ -5,33 +5,28 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ScheduleGrid from "./components/ScheduleGrid";
 import AccordionItem from './components/Accordion';
 import GridItem from './components/GridItem';
+import LoadModal from './components/LoadModal';
+import CreateModal from "./components/CreateModal";
 import Header from "../../components/header";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function Planner() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-    const [columns, setColumns] = useState({});
+    const [columns, setColumns] = useState(null);
     const [concentrations, setConcentrations] = useState([]);
     const [minors, setMinors] = useState([]);
-    const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [undraggableItemIds, setUndraggableItemIds] = useState(new Set());
+    const [showLoadModal, setShowLoadModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [scheduleName, setScheduleName] = useState('');
+    const [message, setMessage] = useState('');
     const pageTitle = "Planner";
 
     useEffect(() => {
-        const fetchTaskStatus = async () => {
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/csClasses`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                console.log(data);
-                setColumns(prevColumns => ({ ...prevColumns, ...data }));
-                setIsDataLoaded(true);
-            } catch (error) {
-                console.error('Error fetching task status:', error);
-            }
-        };
         const fetchConcentrations = async () => {
             try {
                 const response = await fetch(`${BACKEND_URL}/api/getConcentrations`);
@@ -57,10 +52,32 @@ export default function Planner() {
                 console.log('Error fetching concetrations:', error);
             }
         };
-        fetchTaskStatus();
         fetchConcentrations();
         fetchMinors();
     }, []);
+
+
+    const saveSchedule = async () => {
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/saveSchedule`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify({ ScheduleName: scheduleName, taskStatus: columns }),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                toast.success('Schedule saved successfully', { position: "top-right", pauseOnHover: false, autoClose: 5000 });
+            } else {
+                const errorText = await response.text();
+                toast.error(`Error saving schedule: ${errorText}`, { position: "top-right", pauseOnHover: false, autoClose: 5000 });
+            }
+        } catch (error) {
+            toast.error(`Error saving schedule: ${error.message}`, { position: "top-right", pauseOnHover: false, autoClose: 5000 });
+        }
+    };
 
 
     const updateTaskStatusWithConcentration = async (concentrationId) => {
@@ -84,14 +101,14 @@ export default function Planner() {
         }
     };
 
-    const updateTaskStatusWithMinors = async (minorId) => {
+    const updateTaskStatusWithMinors = async (minorName) => {
         try {
             const response = await fetch(`${BACKEND_URL}/api/updateMinors`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ taskStatus: columns, minorId: parseInt(minorId) }),
+                body: JSON.stringify({ taskStatus: columns, minorName: minorName }),
             });
 
             if (!response.ok) {
@@ -107,7 +124,6 @@ export default function Planner() {
 
 
     const onDragStart = (start) => {
-        console.log(columns);
         // Identify if the item is fixed and should not be dragged to other grids
         const item = columns[start.source.droppableId].items.find(i => i.id === start.draggableId);
         if (item && item.isFixed) {
@@ -171,46 +187,65 @@ export default function Planner() {
 
     return (
         <div>
+            <ToastContainer />
+            {showLoadModal && <LoadModal setShowLoadModal={setShowLoadModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} />}
+            {showCreateModal && <CreateModal setShowModal={setShowCreateModal} />}
+
             <Header pageName={pageTitle} />
-            {isDataLoaded ? (
-                <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
-                    <div className="lg:grid lg:grid-cols-12 lg:gap-2 flex flex-col">
-                        <div className="lg:col-span-2 flex flex-col p-2">
-                            <AccordionItem
-                                key="Minors"
-                                id="Minors"
-                                title="Minors"
-                                options={minorOptions}
-                                updateTaskStatusWithConcentration={updateTaskStatusWithMinors}
-                            />
-                            <div className="mb-4"></div>
-                            <AccordionItem
-                                key="Concentrations"
-                                id="Concentrations"
-                                title="Concentrations"
-                                options={concentrationOptions}
-                                updateTaskStatusWithConcentration={updateTaskStatusWithConcentration}
-                            />
-                        </div>
 
-                        <div className="lg:col-span-8 flex justify-center">
-                            <ScheduleGrid columns={columns} />
-                        </div>
+            {columns ? (
+                <div>
 
-                        <div className="lg:col-span-2 flex flex-col justify-center items-center mr-5">
-                            <div className="w-full max-w-xs">
-                                <GridItem column={columns["AP/Summer"]}/>
+                    <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+                        <div className="lg:grid lg:grid-cols-12 lg:gap-2 flex flex-col my-6">
+                            <div className="lg:col-span-2 flex flex-col p-2">
+                                <AccordionItem
+                                    key="Minors"
+                                    id="Minors"
+                                    title="Minors"
+                                    options={minorOptions}
+                                    updateTaskStatusWithConcentration={updateTaskStatusWithMinors}
+                                />
+                                <div className="mb-4"></div>
+                                <AccordionItem
+                                    key="Concentrations"
+                                    id="Concentrations"
+                                    title="Concentrations"
+                                    options={concentrationOptions}
+                                    updateTaskStatusWithConcentration={updateTaskStatusWithConcentration}
+                                />
+                            </div>
+
+                            <div className="lg:col-span-8 flex justify-center">
+                                <ScheduleGrid columns={columns} />
+                            </div>
+
+                            <div className="lg:col-span-2 flex flex-col justify-center items-center mr-5">
+                                <div className="w-full max-w-xs">
+                                    <GridItem column={columns["AP/Summer"]}/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </DragDropContext>
+                        <hr/>
+                    </DragDropContext>
+                </div>
             ) : (
-                <div>Loading courses...</div>
+                <div className="my-6 flex justify-center w-full">
+                    <div className="justify flex-col">
+                        <p className={`max-w-4xl ${isLoading? 'mb-48' : 'mb-96'}`}>I will probably include some basic instructions on how to use the Planner. This will explain how it works (albeit very surface level), just so that Weninger will be able to have an easier idea of what to do, and how to interact with this page. The goal of this component is to streamline it to be as easy as humanly possible.</p>
+                        {isLoading ? (
+                            <p className="flex justify-center w-full mb-48">Loading...</p>
+                        ) : null}
+                    </div>
+                </div>
             )}
-            <div className="flex justify-center">
-                <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-md px-20 py-5 focus:outline-none">
-                    Save Schedule
-                </button>
+            <div className="mt-4">
+                <div className="flex justify-center items-center gap-10">
+                    <button onClick = {() => setShowCreateModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-green-100 rounded-full hover:bg-green-200 active:bg-green-300 focus:outline-none focus:ring focus:ring-green-300">Create Schedule</button>
+                    <button onClick = {() => setShowLoadModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-blue-100 rounded-full hover:bg-blue-200 active:bg-blue-300 focus:outline-none focus:ring focus:ring-blue-300">Load Schedule</button>
+                    <button onClick = {() => saveSchedule()} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-yellow-100 rounded-full hover:bg-yellow-200 active:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 disabled:bg-gray-300 disabled:text-gray-600">Save Schedule</button>
+                    <button onClick = {() => setShowDeleteModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-red-100 rounded-full hover:bg-red-200 active:bg-red-300 focus:outline-none focus:ring focus:ring-red-300">Delete Schedule</button>
+                </div>
             </div>
         </div>
     );

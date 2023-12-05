@@ -42,12 +42,12 @@ export default function ScheduleGrid({ columns }) {
 
     const getItemColorClass = (attribute) => {
         switch (attribute) {
-            case "Core Curriculum": return "bg-red-500";
-            case "Technical Elective": return "bg-green-500";
-            case "CSE Elective": return "bg-blue-500";
-            case "CSE Curriculum": return "bg-yellow-500";
-            case "College of Engineering Requirement": return "bg-purple-500";
-            default: return "bg-gray-500";
+            case "Core Curriculum": return "bg-indigo-300";
+            case "Technical Elective": return "bg-green-300";
+            case "CSE Elective": return "bg-orange-300";
+            case "CSE Curriculum": return "bg-purple-300";
+            case "College of Engineering Requirement": return "bg-red-300";
+            default: return "bg-teal-300";
         }
     };
 
@@ -56,8 +56,9 @@ export default function ScheduleGrid({ columns }) {
             {semesters.map((semester, index) => {
                 const column = columns[semester];
                 return (
-                    <div key={semester} className="flex flex-col items-center m-1">
-                        <h2 className="text-xs font-medium">{column.name}</h2>
+                    <div key={semester}
+                         className="flex flex-col items-center m-1">
+                            <h2 className="text-lg font-bold">{column.name}</h2>
                         <div className="m-1">
                             <Droppable droppableId={semester} key={semester}>
                                 {(provided, snapshot) => (
@@ -73,7 +74,7 @@ export default function ScheduleGrid({ columns }) {
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        className={`select-none p-2 mb-1 items-center min-h-[35px] ${getItemColorClass(item.attribute)} text-white text-xs rounded ${snapshot.isDragging ? 'opacity-75' : ''}`}
+                                                        className={`select-none p-2 mb-1 items-center min-h-[35px] ${getItemColorClass(item.attribute)} text-xs font-medium rounded ${snapshot.isDragging ? 'opacity-75' : ''}`}
                                                         style={provided.draggableProps.style}
                                                     >
                                                         {item.content}
