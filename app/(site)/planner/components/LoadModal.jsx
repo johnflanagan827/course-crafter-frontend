@@ -88,7 +88,7 @@ export default function LoadModal({ setShowLoadModal, setColumns, setScheduleNam
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
             <div className="relative bg-white p-8 w-3/4 lg:w-1/2 xl:w-1/3 2xl:w-1/4 rounded-lg shadow-lg">
                 <h3 className="text-xl font-semibold mb-4">Select a schedule to load:</h3>
-                <select value={selectedSchedule} onChange={(e) => setSelectedSchedule(e.target.value)} className="block w-full mt-3 p-3 border border-gray-300 rounded-md text-lg">
+                <select value={selectedSchedule} onChange={(e) => setSelectedSchedule(e.target.value)} className="mb-2 block w-full mt-3 p-3 border border-gray-300 rounded-md text-lg outline-none focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Select an option</option>
                     {schedules.map(schedule => (
                         <option key={schedule} value={schedule}>
@@ -103,7 +103,7 @@ export default function LoadModal({ setShowLoadModal, setColumns, setScheduleNam
                             e.preventDefault();
                             loadSchedule().then(setShowLoadModal(false));
                         }}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded text-lg"
+                        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded text-lg"
                     >
                         Load
                     </button>

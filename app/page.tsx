@@ -1,14 +1,203 @@
+"use client"
+
+import Header from "@/app/components/header";
+import FaqsCard from "@/app/components/FaqsCard";
+
+import Image from 'next/image';
+import img from "../public/assets/img.png";
+import img_1 from "../public/assets/img_1.png";
+
+
 export default function Home() {
-    const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
+
+    const faqsList = [
+        {
+            q: "What are some random questions to ask?",
+            a: "That's exactly the reason we created this random question generator. There are hundreds of random questions to choose from so you're able to find the perfect random question."
+        },
+        {
+            q: "Do you include common questions?",
+            a: "This generator doesn't include most common questions. The thought is that you can come up with common questions on your own so most of the questions in this generator."
+        },
+        {
+            q: "Can I use this for 21 questions?",
+            a: "Yes! there are two ways that you can use this question generator depending on what you're after. You can indicate that you want 21 questions generated."
+        },
+        {
+            q: "Are these questions for girls or for boys?",
+            a: "The questions in this generator are gender neutral and can be used to ask either male of females (or any other gender the person identifies with)."
+        },
+        {
+            q: "What do you wish you had more talent doing?",
+            a: "If you've been searching for a way to get random questions, you've landed on the correct webpage. We created the Random Question Generator to ask you as many random questions as your heart desires."
+        }
+    ]
+
+
+
+    const features = [
+        {
+            icon:
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>,
+            title: "Title number 1.",
+            desc: "This is going to be filler content for now, we can definitely put in other stuff later. For now, I am trying to make sure that it looks generally good enough, nothing too crazy."
+        },
+        {
+            icon:
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>,
+            title: "Title number 2.",
+            desc: "This is going to be filler content for now, we can definitely put in other stuff later. For now, I am trying to make sure that it looks generally good enough, nothing too crazy."
+        },
+        {
+            icon:
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>,
+            title: "Title number 3.",
+            desc: "This is going to be filler content for now, we can definitely put in other stuff later. For now, I am trying to make sure that it looks generally good enough, nothing too crazy."
+        },
+    ]
+
 
     return (
-      <div>
-          <div>
-              <a href={`${FRONTEND_URL}/login`}>Login</a>
-          </div>
         <div>
-        <a href={`${FRONTEND_URL}/register`}>Register</a>
+            <Header pageName={""}/>
+            <div className="mt-24 absolute inset-0 blur-xl h-[620px] bg-blue-100"></div>
+            <div className='relative'>
+                    <div className='relative'>
+                        <section>
+                            <div className="max-w-screen-2xl mx-auto px-4 my-20 gap-40 text-gray-600 overflow-hidden md:px-8 md:flex">
+                                <div className='flex-none space-y-5 max-w-xl'>
+
+                                <h1 className="text-4xl text-gray-800 font-extrabold sm:text-5xl">
+                                    Plan Your Schedule with CourseCrafter
+                                </h1>
+                                <p>
+                                    At CourseCrafter, we can basically make up crap in this section to just give a very general description, that is mainly just high-level. This description is not going to be anything crazy, just a litle something that can probably be generated by ChatGPT
+                                </p>
+                                    <div className='flex items-center gap-x-3 sm:text-sm'>
+                                        <a href="/register" className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-gray-800 duration-150 hover:bg-gray-700 active:bg-gray-900 rounded-full md:inline-flex">
+                                            Get started
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                                                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                                            </svg>
+                                        </a>
+                                        <a href="/login" className="flex items-center justify-center gap-x-1 py-2 px-4 text-gray-700 hover:text-gray-900 font-medium duration-150 md:inline-flex">
+                                            Login
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                                                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                                            </svg>
+                                        </a>
+                                </div>
+                            </div>
+                            <div className="flex-1 hidden xl:block">
+                                <Image src={img} height={550} alt="Default technology"></Image>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+
+
+
+
+            <section className="py-36">
+                <div className="max-w-screen-2xl mx-auto md:px-8">
+                    <div className="items-center gap-x-48 sm:px-4 md:px-0 lg:flex">
+                        <div className="flex-1 sm:hidden lg:block">
+                            <Image src={img_1} height={500} alt="sample page" />
+                        </div>
+                        <div className="max-w-xl px-4 space-y-3 mt-6 sm:px-0 md:mt-0 lg:max-w-2xl">
+                            <h3 className="text-indigo-600 font-semibold">
+                                Professional services
+                            </h3>
+                            <p className="text-gray-800 text-3xl font-semibold sm:text-4xl">
+                                Build your SaaS solution with help from our experts
+                            </p>
+                            <p className="mt-3 text-gray-600">
+                                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum, sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                            </p>
+                            <a href="/register" className="inline-flex gap-x-1 items-center text-indigo-600 hover:text-indigo-500 duration-150 font-medium">
+                                Register now
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                                    <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <section className="py-28 bg-zinc-50">
+                <div className="max-w-screen-xl mx-auto px-4 text-gray-600 md:px-8">
+                    <div className="max-w-xl space-y-3">
+                        <h3 className="text-indigo-600 font-semibold">
+                            Features
+                        </h3>
+                        <p className="text-gray-800 text-3xl font-semibold sm:text-4xl">
+                            Do more with less complexity
+                        </p>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec congue, nisl eget molestie varius
+                        </p>
+                    </div>
+                    <div className="mt-12">
+                        <ul className="grid gap-x-12 divide-y [&>.feature-1]:pl-0 sm:grid-cols-2 sm:gap-y-8 sm:divide-y-0 lg:divide-x lg:grid-cols-3 lg:gap-x-0">
+                            {
+                                features.map((item, idx) => (
+                                    <li key={idx} className={`feature-${idx + 1} space-y-3 py-8 lg:px-12 sm:py-0`}>
+                                        <div className="w-12 h-12 border text-indigo-600 rounded-full flex items-center justify-center">
+                                            {item.icon}
+                                        </div>
+                                        <h4 className="text-lg text-gray-800 font-semibold">
+                                            {item.title}
+                                        </h4>
+                                        <p>
+                                            {item.desc}
+                                        </p>
+                                    </li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+
+
+
+
+            <div className="py-24">
+            <section className="leading-relaxed max-w-screen-xl mx-auto px-4 md:px-8">
+                <div className="space-y-3 text-center">
+                    <h1 className="text-3xl text-gray-800 font-semibold">
+                        Frequently Asked Questions
+                    </h1>
+                    <p className="text-gray-600 max-w-lg mx-auto text-lg">
+                        Answered all frequently asked questions, Still confused? feel free to contact us.
+                    </p>
+                </div>
+                <div className="mt-14 max-w-2xl mx-auto">
+                    {
+                        faqsList.map((item, idx) => (
+                            <FaqsCard
+                                idx={idx}
+                                faqsList={item}
+                            />
+                        ))
+                    }
+                </div>
+            </section>
+            </div>
+
+
         </div>
-      </div>
-  )
+    )
 }

@@ -1,20 +1,27 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function CreateModal({ setShowModal, setColumns, setScheduleName, setIsLoading, schedules, setSchedules }) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [newScheduleName, setNewScheduleName] = useState('');
 
     const loadSchedule = async () => {
-        if (newScheduleName in schedules) {
-            console.log('error');
+        if (schedules.includes(newScheduleName)) {
+            toast.error('Error: Schedule name already exists', {
+                position: "top-right",
+                type: 'error',
+                isLoading: false,
+                autoClose: 3000,
+            });
             return;
         }
         setColumns(null);
         setIsLoading(true);
 
         try {
+            setShowModal(false);
             const response = await fetch(`${BACKEND_URL}/api/createSchedule`, {
                 method: 'POST',
                 headers: {
@@ -30,7 +37,6 @@ export default function CreateModal({ setShowModal, setColumns, setScheduleName,
 
             const data = await response.json();
             const { ScheduleName, ...columnData } = data;
-            console.log(data);
             setColumns(columnData);
             setScheduleName(ScheduleName);
             setSchedules([...schedules, newScheduleName])
@@ -51,9 +57,9 @@ export default function CreateModal({ setShowModal, setColumns, setScheduleName,
                     <button
                         onClick={(e) => {
                             e.preventDefault();
-                            loadSchedule().then(setShowModal(false));
+                            loadSchedule();
                         }}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded text-lg"
+                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded text-lg"
                     >
                         Create
                     </button>

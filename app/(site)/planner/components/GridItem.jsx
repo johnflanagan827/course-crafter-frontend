@@ -19,7 +19,7 @@ export default function GridItem({ column }) {
 
     return (
         <div className="flex flex-col items-center m-1">
-            <h2 className="text-sm font-medium">{column.name}</h2>
+            <h2 className="text-lg font-bold">{column.name}</h2>
             <div className="m-1">
                 <Droppable droppableId={column.name}>
                     {(provided, snapshot) => (
@@ -35,7 +35,7 @@ export default function GridItem({ column }) {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
-                                            className={`select-none p-2 mb-1 flex items-center min-h-[40px] ${getItemColorClass(item.attribute)} text-xs font-bold rounded ${snapshot.isDragging ? 'opacity-75' : ''}`}
+                                            className={`select-none p-2 mb-1 flex items-center min-h-[40px] ${getItemColorClass(item.attribute)} text-xs font-medium rounded ${snapshot.isDragging ? 'opacity-75' : ''}`}
                                             style={provided.draggableProps.style}
                                         >
                                             {item.content}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ScheduleGrid from "./components/ScheduleGrid";
 import AccordionItem from './components/Accordion';
@@ -30,6 +31,22 @@ export default function Planner() {
     const pageTitle = "Planner";
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+
+            if (decodedToken.exp < currentTime) {
+                // Token expired, redirect to login
+                window.location.href = "/login";
+                return;
+            }
+        } else {
+            // No token found, redirect to login
+            window.location.href = "/login";
+            return;
+        }
         const fetchConcentrations = async () => {
             try {
                 const response = await fetch(`${BACKEND_URL}/api/getConcentrations`);
@@ -52,7 +69,7 @@ export default function Planner() {
                 const data = await response.json();
                 setMinors(data);
             } catch (error) {
-                console.log('Error fetching concetrations:', error);
+                console.log('Error fetching concentrations:', error);
             }
         };
 
@@ -65,6 +82,7 @@ export default function Planner() {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     },
                 });
+
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -74,14 +92,15 @@ export default function Planner() {
                 console.error('Error fetching data: ', error);
             }
         };
-
+        fetchSchedules();
         fetchConcentrations();
         fetchMinors();
-        fetchSchedules();
     }, []);
 
 
     const saveSchedule = async () => {
+        const loadingToastId = toast.loading('Saving schedule...', { position: "top-right" });
+
         try {
             const response = await fetch(`${BACKEND_URL}/api/saveSchedule`, {
                 method: 'PUT',
@@ -91,15 +110,16 @@ export default function Planner() {
                 },
                 body: JSON.stringify({ ScheduleName: scheduleName, taskStatus: columns }),
             });
+
             if (response.ok) {
                 const data = await response.json();
-                toast.success('Schedule saved successfully', { position: "top-right", pauseOnHover: false, autoClose: 5000 });
+                toast.update(loadingToastId, { render: 'Schedule saved successfully!', type: 'success', isLoading: false, autoClose: 3000 });
             } else {
                 const errorText = await response.text();
-                toast.error(`Error saving schedule: ${errorText}`, { position: "top-right", pauseOnHover: false, autoClose: 5000 });
+                toast.update(loadingToastId, { render: `Error saving schedule: ${errorText}`, type: 'error', isLoading: false, autoClose: 3000 });
             }
         } catch (error) {
-            toast.error(`Error saving schedule: ${error.message}`, { position: "top-right", pauseOnHover: false, autoClose: 5000 });
+            toast.update(loadingToastId, { render: `Error saving schedule: ${error.message}`, type: 'error', isLoading: false, autoClose: 3000 });
         }
     };
 
@@ -212,13 +232,14 @@ export default function Planner() {
 
     return (
         <div>
+            {}
             <ToastContainer />
             {showCreateModal && <CreateModal setShowModal={setShowCreateModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} schedules={schedules} setSchedules={setSchedules}/>}
             {showLoadModal && <LoadModal setShowLoadModal={setShowLoadModal} setColumns={setColumns} setScheduleName={setScheduleName} setIsLoading={setIsLoading} schedules={schedules}  minors={minors} setSelectedMinor={setSelectedMinor} concentrations={concentrations} setSelectedConcentration={setSelectedConcentration}/>}
             {showDeleteModal && <DeleteModal setShowDeleteModal={setShowDeleteModal} setColumns={setColumns} scheduleName={scheduleName} setScheduleName={setScheduleName} schedules={schedules} setSchedules={setSchedules}/>}
 
             <Header pageName={pageTitle} />
-
+            <h3 className={`mt-6 mb-12 text-center text-4xl font-bold ${isLoading ? 'hidden' : null}`} style={{fontFamily: 'Monaco'}}>{scheduleName}</h3>
             {columns ? (
                 <div>
 
@@ -262,20 +283,38 @@ export default function Planner() {
             ) : (
                 <div className="my-6 flex justify-center w-full">
                     <div className="justify flex-col">
-                        <p className={`max-w-4xl ${isLoading? 'mb-48' : 'mb-96'}`}>I will probably include some basic instructions on how to use the Planner. This will explain how it works (albeit very surface level), just so that Weninger will be able to have an easier idea of what to do, and how to interact with this page. The goal of this component is to streamline it to be as easy as humanly possible.</p>
+                        <p className={`max-w-4xl mb-64 ${scheduleName ? 'hidden' : null}`}>I will probably include some basic instructions on how to use the Planner. This will explain how it works (albeit very surface level), just so that Weninger will be able to have an easier idea of what to do, and how to interact with this page. The goal of this component is to streamline it to be as easy as humanly possible.</p>
                         {isLoading ? (
-                            <p className="flex justify-center w-full mb-48">Loading...</p>
+                            <div role="status" className="flex justify-center w-full my-64">
+                                <svg aria-hidden="true" className="w-14 h-14 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                </svg>
+                                <span className="sr-only">Loading...</span>
+                            </div>
                         ) : null}
                     </div>
                 </div>
             )}
-            <div className={`mt-4 ${!schedules ? 'hidden' : null}`}>
-                <div className="flex justify-center items-center gap-10">
-                    <button onClick = {() => setShowCreateModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-green-100 rounded-full hover:bg-green-200 active:bg-green-300 focus:outline-none focus:ring focus:ring-green-300">Create Schedule</button>
-                    <button onClick = {() => setShowLoadModal(true)} disabled={schedules?.length === 0} className="px-10 py-4 text-lg duration-200 font-semibold bg-blue-100 rounded-full hover:bg-blue-200 active:bg-blue-300 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-300 disabled:text-gray-600">Load Schedule</button>
-                    <button onClick = {() => saveSchedule()} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-yellow-100 rounded-full hover:bg-yellow-200 active:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 disabled:bg-gray-300 disabled:text-gray-600">Save Schedule</button>
-                    <button onClick = {() => setShowDeleteModal(true)} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-red-100 rounded-full hover:bg-red-200 active:bg-red-300 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-300 disabled:text-gray-600">Delete Schedule</button>
-                </div>
+            <div>
+                {!schedules ? (
+                    <div role="status" className="flex justify-center w-full">
+                        <svg aria-hidden="true" className="w-14 h-14 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                        </svg>
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                ) : (
+                    <div className={`mt-4 ${!schedules ? 'hidden' : null}`}>
+                        <div className="flex justify-center items-center gap-10">
+                            <button onClick = {() => setShowCreateModal(true)} className="px-10 py-4 text-lg duration-200 font-semibold bg-green-100 rounded-full hover:bg-green-200 active:bg-green-300 focus:outline-none focus:ring focus:ring-green-300">Create Schedule</button>
+                            <button onClick = {() => setShowLoadModal(true)} disabled={schedules?.length === 0} className="px-10 py-4 text-lg duration-200 font-semibold bg-blue-100 rounded-full hover:bg-blue-200 active:bg-blue-300 focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-300 disabled:text-gray-600">Load Schedule</button>
+                            <button onClick = {() => saveSchedule()} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-yellow-100 rounded-full hover:bg-yellow-200 active:bg-yellow-300 focus:outline-none focus:ring focus:ring-yellow-300 disabled:bg-gray-300 disabled:text-gray-600">Save Schedule</button>
+                            <button onClick = {() => setShowDeleteModal(true)} disabled = {!columns} className="px-10 py-4 text-lg duration-200 font-semibold bg-red-100 rounded-full hover:bg-red-200 active:bg-red-300 focus:outline-none focus:ring focus:ring-red-300 disabled:bg-gray-300 disabled:text-gray-600">Delete Schedule</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
