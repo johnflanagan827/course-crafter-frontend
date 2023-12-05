@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function CreateModal({ setShowModal, setColumns, setScheduleName, setIsLoading, schedules, setSchedules }) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
