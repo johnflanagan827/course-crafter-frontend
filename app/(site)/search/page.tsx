@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from '@/app/components/header';
+import {jwtDecode} from "jwt-decode";
 
 interface CourseModalProps {
     courseDetails?: string[];
@@ -49,6 +50,26 @@ export default function Search() {
 
     useEffect(() => {
         fetchRecClasses();
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+
+            // @ts-ignore
+            if (decodedToken.exp < currentTime) {
+                // Token expired, redirect to login
+                window.location.href = "/login";
+                return;
+            }
+        } else {
+            // No token found, redirect to login
+            window.location.href = "/login";
+            return;
+        }
     }, []);
 
     const fetchSearch = async () => {
@@ -168,10 +189,12 @@ export default function Search() {
             <Header pageName={pageTitle} />
             <div className="flex justify-center">
                 <div className="w-1/2 p-6">
-                    <h3 className='text-3xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>Search for Classes by Name</h3>
-                    <form onSubmit={(e) => { e.preventDefault(); }} className="max-w-md px-4 mx-auto mt-12">
+                    <h3 className='text-3xl font-bold flex justify-center mb-4 mt-4' style={headingStyle}>
+                        Search for Classes by Name
+                    </h3>
+                    <form onSubmit={(e) => e.preventDefault()} className="max-w-md px-4 mx-auto mt-12">
                         <div className="relative">
-                            <button onClick={(e) => fetchSearch()}>
+                            <button onClick={fetchSearch}>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="absolute top-0 bottom-0 w-6 h-6 my-auto text-gray-400 left-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
@@ -190,68 +213,76 @@ export default function Search() {
                                 <li
                                     key={index}
                                     onClick={() => handleCourseClick(item)}
-                                    className={`p-3 rounded-md w-full md:w-auto cursor-pointer ${selectedCourse === item ? 'bg-gray-300' : 'bg-gray-100'
-                                        }`}
+                                    className={`p-3 rounded-md w-full md:w-auto cursor-pointer ${selectedCourse === item ? 'bg-gray-300' : 'bg-gray-100'}`}
                                 >
                                     {item}
                                 </li>
                             ))}
                         </ul>
-                        <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>{errormsg}</div>
+                        <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>
+                            {errormsg}
+                        </div>
                     </div>
                     {selectedCourse && courseDetails !== null && (
                         <CourseModal courseDetails={courseDetails} closeModal={closeModal} />
                     )}
                 </div>
                 <div className="w-1/2 p-6">
-                    <h3 className='text-3xl font-bold flex justify-center mb-10 mt-4' style={headingStyle}>Course Recommendations</h3>
-                    <div className="mb-4">
-                        <span className="mr-3 font-bold">Filter:</span>
-                        <label className="mr-3">
-                            <input
-                                type="radio"
-                                name="filter"
-                                value="difficulty"
-                                checked={selectedFilter === 'difficulty'}
-                                onChange={() => handleFilterChange('difficulty')}
-                            />
-                            Difficulty (1-5)
-                        </label>
+                    <h3 className='text-3xl font-bold flex justify-center mb-10 mt-4' style={headingStyle}>
+                        Course Recommendations
+                    </h3>
+                    {recList && (
+                        <div>
+                            <div className="mb-4">
+                                <span className="mr-3 font-bold">Filter:</span>
+                                <label className="mr-3">
+                                    <input
+                                        type="radio"
+                                        name="filter"
+                                        value="difficulty"
+                                        checked={selectedFilter === 'difficulty'}
+                                        onChange={() => handleFilterChange('difficulty')}
+                                    />
+                                    Difficulty (1-5)
+                                </label>
 
-                        <label className="mr-3">
-                            <input
-                                type="radio"
-                                name="filter"
-                                value="hours"
-                                checked={selectedFilter === 'hours'}
-                                onChange={() => handleFilterChange('hours')}
-                            />
-                            Hours (&lt;2-5+)
-                        </label>
+                                <label className="mr-3">
+                                    <input
+                                        type="radio"
+                                        name="filter"
+                                        value="hours"
+                                        checked={selectedFilter === 'hours'}
+                                        onChange={() => handleFilterChange('hours')}
+                                    />
+                                    Hours (&lt;2-5+)
+                                </label>
 
-                        <label>
-                            <input
-                                type="radio"
-                                name="filter"
-                                value="grade"
-                                checked={selectedFilter === 'grade'}
-                                onChange={() => handleFilterChange('grade')}
-                            />
-                            Grade (A-F)
-                        </label>
-                    </div>
-                    <div className="h-80 overflow-y-auto h-full p-4 border rounded">
-                        {applyFilters().map((course, index) => (
-                            <div key={index} className="mb-4">
-                                <p className="font-bold">{index + 1}. {course.name}</p>
-                                <p>Difficulty: {course.difficulty}</p>
-                                <p>Hours: {course.hours}</p>
-                                <p>Grade: {course.grade}</p>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="filter"
+                                        value="grade"
+                                        checked={selectedFilter === 'grade'}
+                                        onChange={() => handleFilterChange('grade')}
+                                    />
+                                    Grade (A-F)
+                                </label>
                             </div>
-                        ))}
-                    </div>
+                            <div className="h-[36rem] overflow-y-auto h-full p-4 border rounded">
+                                {applyFilters().map((course, index) => (
+                                    <div key={index} className="mb-4">
+                                        <p className="font-bold">{index + 1}. {course.name}</p>
+                                        <p>Difficulty: {course.difficulty}</p>
+                                        <p>Hours: {course.hours}</p>
+                                        <p>Grade: {course.grade}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
+
 }

@@ -1,15 +1,32 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {toast} from "react-toastify";
+import {jwtDecode} from "jwt-decode";
 
 export default function DeleteModal({ setShowDeleteModal, setColumns, scheduleName, setScheduleName, schedules, setSchedules }) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+
+            if (decodedToken.exp < currentTime) {
+                // Token expired, redirect to login
+                window.location.href = "/login";
+                return;
+            }
+        } else {
+            // No token found, redirect to login
+            window.location.href = "/login";
+            return;
+        }
+    }, []);
 
     const deleteSchedule = async () => {
-        const loadingToastId = toast.loading('Deleting schedule...', { position: "top-right" });
-
         try {
             const response = await fetch(`${BACKEND_URL}/api/deleteSchedule?scheduleName=${encodeURIComponent(scheduleName)}`, {
                 method: 'DELETE',
@@ -21,16 +38,20 @@ export default function DeleteModal({ setShowDeleteModal, setColumns, scheduleNa
 
             if (response.ok) {
                 const data = await response.json();
-                toast.update(loadingToastId, { render: 'Schedule deleted successfully', type: 'success', isLoading: false, autoClose: 5000 });
+                toast.success('Schedule deleted successfully', { position: "top-right", autoClose: 5000 });
                 setColumns(null);
                 setScheduleName('');
                 setSchedules(schedules.filter(schedule => schedule !== scheduleName));
             } else {
+                if (response.status == 401) {
+                    window.location.href = "/login";
+                    return;
+                }
                 const errorText = await response.text();
-                toast.update(loadingToastId, { render: `Error deleting schedule: ${errorText}`, type: 'error', isLoading: false, autoClose: 5000 });
+                toast.error(`Error deleting schedule: ${errorText}`, { position: "top-right", autoClose: 5000 });
             }
         } catch (error) {
-            toast.update(loadingToastId, { render: `Error deleting schedule: ${error.message}`, type: 'error', isLoading: false, autoClose: 5000 });
+            toast.error(`Error deleting schedule: ${error.message.msg}`, { position: "top-right", autoClose: 5000 });
         }
     };
 
@@ -39,7 +60,7 @@ export default function DeleteModal({ setShowDeleteModal, setColumns, scheduleNa
             <div className="relative bg-white p-8 w-11/12 md:w-3/4 lg:w-1/2 xl:w-1/3 2xl:w-1/4 rounded-lg shadow-xl">
                 <h3 className="text-xl md:text-2xl font-semibold text-gray-700 mb-6">Confirm Deletion</h3>
                 <p className="text-md md:text-lg text-gray-600 mb-8">
-                    Are you sure you want to delete the schedule <span className="font-medium">'{scheduleName}'</span>?
+                    Are you sure you want to delete the schedule <span className="font-bold">{scheduleName}</span>?
                     This action cannot be undone.
                 </p>
                 <div className="flex justify-center gap-6 mt-4">

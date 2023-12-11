@@ -27,6 +27,7 @@ export default function Register() {
         if (response.ok) {
             const data = await response.json();
             setErrormsg('');
+            localStorage.setItem('token', data.access_token);
             router.push("/dashboard");
         } else {
             const data = await response.json();
@@ -42,7 +43,9 @@ export default function Register() {
 
     return (
         <main className="w-full h-screen flex flex-col items-center justify-center px-4">
-            <Image alt="course crafter logo" src={coursecrafter_logo}  width={650} />
+            <a href={`${FRONTEND_URL}/`}>
+                <Image alt="course crafter logo" src={coursecrafter_logo} width={650}/>
+            </a>
             <div className="max-w-sm w-full text-gray-600">
                 <div className="text-center">
                     <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>{errormsg}</div>
@@ -84,6 +87,7 @@ export default function Register() {
                             onChange={(e) => setPassword(e.target.value)}
                             onPaste={(e) => e.preventDefault()}
                             onDrop={(e) => e.preventDefault()}
+                            minLength={8}
                             maxLength={256}
                         />
                         <span

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from '@/app/components/header';
+import {jwtDecode} from "jwt-decode";
 
 // Define the Search component
 export default function Search() {
@@ -19,6 +20,25 @@ export default function Search() {
     const [submitMessage, setSubmitMessage] = useState<string>('');
     const [submissionStatus, setSubmissionStatus] = useState<boolean | null>(null);
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+
+            // @ts-ignore
+            if (decodedToken.exp < currentTime) {
+                // Token expired, redirect to login
+                window.location.href = "/login";
+                return;
+            }
+        } else {
+            // No token found, redirect to login
+            window.location.href = "/login";
+            return;
+        }
+    }, []);
 
     const submit_rating = async () => {
         const response = await fetch(`${BACKEND_URL}/api/rating`, {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from '@/app/components/header';
+import {jwtDecode} from "jwt-decode";
 
 export default function Dashboard() {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -15,6 +16,26 @@ export default function Dashboard() {
     useEffect(() => {
         console.log(searchQuery);
     }, [searchQuery])
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+
+            // @ts-ignore
+            if (decodedToken.exp < currentTime) {
+                // Token expired, redirect to login
+                window.location.href = "/login";
+                return;
+            }
+        } else {
+            // No token found, redirect to login
+            window.location.href = "/login";
+            return;
+        }
+    }, []);
 
     const fetchSearch = async () => {
         const response = await fetch(`${BACKEND_URL}/api/search`, {

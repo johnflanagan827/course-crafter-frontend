@@ -1,10 +1,30 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
+import {jwtDecode} from "jwt-decode";
 
 export default function LoadModal({ setShowLoadModal, setColumns, setScheduleName, setIsLoading, schedules, minors, setSelectedMinor, concentrations, setSelectedConcentration }) {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [selectedSchedule, setSelectedSchedule] = useState('');
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+
+            if (decodedToken.exp < currentTime) {
+                // Token expired, redirect to login
+                window.location.href = "/login";
+                return;
+            }
+        } else {
+            // No token found, redirect to login
+            window.location.href = "/login";
+            return;
+        }
+    }, []);
 
     const loadSchedule = async () => {
         if (!selectedSchedule) {
@@ -23,7 +43,8 @@ export default function LoadModal({ setShowLoadModal, setColumns, setScheduleNam
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                window.location.href = "/login";
+                return;
             }
 
             const data = await response.json();

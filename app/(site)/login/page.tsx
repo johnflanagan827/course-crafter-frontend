@@ -43,14 +43,18 @@ export default function Register() {
 
     return (
         <main className="w-full h-screen flex flex-col items-center justify-center px-4">
-            <Image alt="course crafter logo" src={coursecrafter_logo}  width={650} />
+            <a href={`${FRONTEND_URL}/`}>
+                <Image alt="course crafter logo" src={coursecrafter_logo} width={650}/>
+            </a>
             <div className="max-w-sm w-full text-gray-600">
                 <div className="text-center">
                     <div className={errormsg ? "text-red-500 text-lg" : "hidden"}>{errormsg}</div>
-                    <img src="" width={150} className="mx-auto" />
+                    <img src="" width={150} className="mx-auto"/>
                     <div className="mt-5 space-y-2">
                         <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Sign into your account</h3>
-                        <p className="">Don't have an account? <a href={`${FRONTEND_URL}/register`} className="font-medium text-indigo-600 hover:text-indigo-500">Register</a></p>
+                        <p className="">Don't have an account? <a href={`${FRONTEND_URL}/register`}
+                                                                  className="font-medium text-indigo-600 hover:text-indigo-500">Register</a>
+                        </p>
                     </div>
                 </div>
                 <form
@@ -86,6 +90,7 @@ export default function Register() {
                             onChange={(e) => setPassword(e.target.value)}
                             onPaste={(e) => e.preventDefault()}
                             onDrop={(e) => e.preventDefault()}
+                            minLength={8}
                             maxLength={256}
                         />
                         <span
